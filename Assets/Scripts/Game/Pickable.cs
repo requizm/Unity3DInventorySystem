@@ -42,7 +42,7 @@ namespace Core
         {
             if (!IsPicked && Input.GetKeyDown(KeyCode.E))
             {
-                var distance = Mathf.Abs(Vector3.Distance(transform.position, player.transform.position));
+                var distance = Mathf.Abs(Vector3.Distance(visual.transform.position, player.transform.position));
                 if (distance <= distanceToPick)
                 {
                     Pick();
