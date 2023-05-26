@@ -18,12 +18,10 @@ namespace Demo
             // Register all your services next.
             ServiceLocator.Current.Register(new InventoryManager());
             ServiceLocator.Current.Register(Object.FindObjectOfType<Player>());
-            ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventoryManager>());
+            ServiceLocator.Current.Register(new UIInventoryManager());
+            ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventory>());
 
-            foreach (var binder in Object.FindObjectsOfType<MonoBehaviour>().OfType<IBinder>())
-            {
-                binder.Initialize();
-            }
+            ServiceLocator.Current.InitializeServices();
         }
     }
 }

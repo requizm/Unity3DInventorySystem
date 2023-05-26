@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Demo
 {
@@ -67,7 +69,19 @@ namespace Demo
             }
 
             services.Add(key, service);
-            service.Initialize();
+        }
+        
+        public void InitializeServices()
+        {
+            foreach (var service in services.Values)
+            {
+                service.Initialize();
+            }
+            
+            foreach (var binder in Object.FindObjectsOfType<MonoBehaviour>().OfType<IBinder>())
+            {
+                binder.Initialize();
+            }
         }
 
         /// <summary>
