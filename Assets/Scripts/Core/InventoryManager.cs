@@ -38,7 +38,9 @@ namespace Core
         /// <summary>
         /// Limit of items in inventory. Default is 15.
         /// </summary>
-        public int Limit { get; set; } = 15; // TODO: Make it dynamic
+        public int PageLimit { get; set; } = 15; // TODO: Make it dynamic
+
+        public int Limit => PageLimit * 2;
 
         public InventoryManager()
         {

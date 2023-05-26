@@ -196,6 +196,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         if (success && uiInventoryManager.DragStartItemSlot != uiInventoryManager.DragEndItemSlot)
         {
             uiInventoryManager.SwapTwoItems(uiInventoryManager.DragStartItemSlot, uiInventoryManager.DragEndItemSlot);
+            return;
         }
     }
     
