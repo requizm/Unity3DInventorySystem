@@ -17,6 +17,10 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     [SerializeField] private Button button;
     [SerializeField] private TextMeshProUGUI stackText;
 
+    private Color EmptyIconColor { get; set; }
+    private Color FilledIconColor { get; set; }
+    public Color NotFilledIconColor { get; private set; }
+
     public List<IItem> Items { get; private set; } = new List<IItem>();
 
     public bool IsEmpty => Items.Count == 0;
@@ -43,15 +47,12 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         iconImage.sprite = item[0].ItemAsset.icon;
         stackText.text = item.Count.ToString();
         Items = item;
+        
+        EmptyIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
+        FilledIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 1f);
+        NotFilledIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0.5f);
 
-        if (IsEmpty)
-        {
-            iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
-        }
-        else
-        {
-            iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 1f);
-        }
+        iconImage.color = IsEmpty ? EmptyIconColor : FilledIconColor;
     }
 
     /// <summary>
@@ -63,8 +64,11 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         iconImage.sprite = null;
         stackText.text = "";
         Items.Clear();
+        
+        EmptyIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
+        NotFilledIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0.5f);
 
-        iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
+        iconImage.color = EmptyIconColor;
     }
 
     /// <summary>
@@ -193,5 +197,15 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         {
             uiInventoryManager.SwapTwoItems(uiInventoryManager.DragStartItemSlot, uiInventoryManager.DragEndItemSlot);
         }
+    }
+    
+    public void SetColor(Color color)
+    {
+        iconImage.color = color;
+    }
+    
+    public void ResetColor()
+    {
+        iconImage.color = IsEmpty ? EmptyIconColor : FilledIconColor;
     }
 }

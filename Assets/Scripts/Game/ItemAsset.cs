@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Core
 {
@@ -10,6 +11,7 @@ namespace Core
     {
         [SerializeField] public int id;
         [SerializeField] public string name;
+        [SerializeField] public List<string> tags;
         [SerializeField] public int stackLimit;
         [SerializeField] public GameObject prefab;
         [SerializeField] public Sprite icon;

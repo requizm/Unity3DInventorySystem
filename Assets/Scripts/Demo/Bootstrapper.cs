@@ -20,6 +20,8 @@ namespace Demo
             ServiceLocator.Current.Register(Object.FindObjectOfType<Player>());
             ServiceLocator.Current.Register(new UIInventoryManager());
             ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventory>());
+            ServiceLocator.Current.Register(Object.FindObjectOfType<UIManager>());
+            ServiceLocator.Current.Register(new UIInventorySearcher());
 
             ServiceLocator.Current.InitializeServices();
         }

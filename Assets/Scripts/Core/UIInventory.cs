@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Demo;
+using TMPro;
 using UnityEngine;
 
 namespace Core
@@ -8,6 +9,7 @@ namespace Core
     {
         [SerializeField] public GameObject inventoryPanel;
         [SerializeField] public GameObject itemSlotPrefab;
+        [SerializeField] public TMP_InputField searchInput;
         
         public List<ItemSlot> ItemSlots { get; set; } = new List<ItemSlot>();
 

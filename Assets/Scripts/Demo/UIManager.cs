@@ -1,4 +1,5 @@
-﻿using Demo;
+﻿using System;
+using Demo;
 using UnityEngine;
 
 namespace Core
@@ -6,9 +7,11 @@ namespace Core
     /// <summary>
     /// This is basically show/hide UI on Tab press.
     /// </summary>
-    public class UIManager : MonoBehaviour
+    public class UIManager : MonoBehaviour, IGameService
     {
         [SerializeField] private GameObject canvas;
+
+        public Action<bool> OnInventoryToggle;
 
         private void Awake()
         {
@@ -30,7 +33,12 @@ namespace Core
                 }
 
                 canvas.SetActive(!canvas.activeSelf);
+                OnInventoryToggle?.Invoke(canvas.activeSelf);
             }
+        }
+
+        public void Initialize()
+        {
         }
     }
 }
