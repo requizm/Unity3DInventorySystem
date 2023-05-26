@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cube
   m_EditorClassIdentifier: 
   id: 0
-  name: CubeName
+  assetName: CubeName
   tags:
   - kare
   stackLimit: 3

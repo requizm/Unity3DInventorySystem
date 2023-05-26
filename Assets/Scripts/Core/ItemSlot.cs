@@ -43,7 +43,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     /// <param name="item">Count should be greater than 0</param>
     public void SetItem(List<IItem> item)
     {
-        nameText.text = item[0].ItemAsset.name;
+        nameText.text = item[0].ItemAsset.assetName;
         iconImage.sprite = item[0].ItemAsset.icon;
         stackText.text = item.Count.ToString();
         Items = item;

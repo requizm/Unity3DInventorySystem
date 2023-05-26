@@ -10,7 +10,7 @@ namespace Core
     public class ItemAsset : ScriptableObject
     {
         [SerializeField] public int id;
-        [SerializeField] public string name;
+        [SerializeField] public string assetName;
         [SerializeField] public List<string> tags;
         [SerializeField] public int stackLimit;
         [SerializeField] public GameObject prefab;

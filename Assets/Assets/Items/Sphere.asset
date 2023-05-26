@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sphere
   m_EditorClassIdentifier: 
   id: 1
-  name: SphereName
+  assetName: SphereName
   tags:
   - yuvarlak
   stackLimit: 1

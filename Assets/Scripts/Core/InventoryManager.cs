@@ -79,7 +79,7 @@ namespace Core
 
             item.OnAdd();
             OnItemAdded?.Invoke(item, stackIndex);
-            Debug.Log($"{item.ItemAsset.name}:{item.Id} added");
+            Debug.Log($"{item.ItemAsset.assetName}:{item.Id} added");
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Core
             var stackIndex = Items.FindIndex(i => i.Contains(item));
             if (stackIndex == -1)
             {
-                Debug.LogError($"Item {item.ItemAsset.name}:{item.Id} not found");
+                Debug.LogError($"Item {item.ItemAsset.assetName}:{item.Id} not found");
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace Core
 
             item.OnRemove();
             OnItemRemoved?.Invoke(item, stackIndex);
-            Debug.Log($"{item.ItemAsset.name}:{item.Id} removed");
+            Debug.Log($"{item.ItemAsset.assetName}:{item.Id} removed");
         }
     }
 }

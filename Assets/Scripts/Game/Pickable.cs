@@ -28,14 +28,14 @@ namespace Core
         public void OnAdd()
         {
             visual.SetActive(false);
-            Debug.Log($"Internal {itemAsset.name} added");
+            Debug.Log($"Internal {itemAsset.assetName} added");
         }
 
         public void OnRemove()
         {
             visual.transform.position = player.transform.position + player.transform.forward;
             visual.SetActive(true);
-            Debug.Log($"Internal {itemAsset.name} removed");
+            Debug.Log($"Internal {itemAsset.assetName} removed");
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Core
         {
             if (IsPicked)
             {
-                Debug.LogError($"{itemAsset.name}:{Id} already picked");
+                Debug.LogError($"{itemAsset.assetName}:{Id} already picked");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace Core
         {
             if (!IsPicked)
             {
-                Debug.LogError($"{itemAsset.name}:{Id} is not picked");
+                Debug.LogError($"{itemAsset.assetName}:{Id} is not picked");
                 return;
             }
 

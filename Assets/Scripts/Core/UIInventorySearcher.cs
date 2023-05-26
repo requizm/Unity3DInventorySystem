@@ -43,7 +43,7 @@ namespace Core
                 }
 
                 var firstItem = itemSlot.Items[0];
-                if (firstItem.ItemAsset.name.ToLower().Contains(value.ToLower()))
+                if (firstItem.ItemAsset.assetName.ToLower().Contains(value.ToLower()))
                 {
                     foundedItemSlots.Add(itemSlot);
                     continue;
