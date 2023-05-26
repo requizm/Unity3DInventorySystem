@@ -155,8 +155,8 @@ namespace Core
             var fromItemIndex = pageIndex * inventoryManager.PageLimit + fromSiblingIndex;
             var toItemIndex = pageIndex * inventoryManager.PageLimit + toSiblingIndex;
 
-            var fromItemsCopy = new List<IItem>(to.Items);
-            var toItemsCopy = new List<IItem>(from.Items);
+            var fromItemsCopy = new List<IItem>(from.Items);
+            var toItemsCopy = new List<IItem>(to.Items);
 
             // Change backend order
             inventoryManager.Items[fromItemIndex] = swapNeeded ? toItemsCopy : fromItemsCopy;
