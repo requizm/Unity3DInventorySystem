@@ -14,7 +14,7 @@ namespace Core
         public ItemSlot SelectedItem
         {
             get => selectedItem;
-            private set
+            set
             {
                 if (selectedItem != null)
                 {
@@ -111,25 +111,7 @@ namespace Core
             }
 
             availableItemSlot.Clear();
-        }
-
-        public void ClickItem(ItemSlot item)
-        {
-            var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
-            var previousItemSlot = Array.Find(itemSlots, x => x == SelectedItem);
-            var newItemSlot = Array.Find(itemSlots, x => x == item);
-
-            if (previousItemSlot != null && !SelectedItem.IsEmpty && previousItemSlot.Item == newItemSlot.Item)
-            {
-                SelectedItem = null;
-            }
-            else
-            {
-                if (selectedItem == null || !SelectedItem.IsEmpty)
-                {
-                    SelectedItem = newItemSlot;
-                }
-            }
+            SelectedItem = null;
         }
 
         private void OnDestroy()
@@ -148,7 +130,6 @@ namespace Core
                     Debug.LogError("Item is not pickable");
                     return;
                 }
-                SelectedItem = null;
                 item.Drop();
             }
         }

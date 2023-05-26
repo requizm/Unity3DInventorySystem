@@ -45,7 +45,14 @@ public class ItemSlot : MonoBehaviour, IBinder, ISelectable
 
     private void OnClick()
     {
-        uiInventoryManager.ClickItem(this);
+        if (this == uiInventoryManager.SelectedItem)
+        {
+            uiInventoryManager.SelectedItem = null;
+        }
+        else if(uiInventoryManager.SelectedItem == null || !uiInventoryManager.SelectedItem.IsEmpty)
+        {
+            uiInventoryManager.SelectedItem = this;
+        }
     }
 
     public void OnSelect()
