@@ -38,6 +38,9 @@ namespace Core
             Debug.Log($"Internal {itemAsset.name} removed");
         }
 
+        /// <summary>
+        /// If player is near and press E, pick item
+        /// </summary>
         private void Update()
         {
             if (!IsPicked && Input.GetKeyDown(KeyCode.E))

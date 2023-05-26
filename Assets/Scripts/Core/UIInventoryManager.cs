@@ -85,6 +85,9 @@ namespace Core
             inventoryManager.OnItemRemoved += OnItemRemoved;
         }
 
+        /// <summary>
+        /// Refresh inventory UI
+        /// </summary>
         private void Refresh()
         {
             foreach (Transform child in inventoryPanel.transform)
@@ -113,6 +116,11 @@ namespace Core
             }
         }
 
+        /// <summary>
+        /// Called when item is added to inventory
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="index">Index of the stack</param>
         private void OnItemAdded(IItem item, int index)
         {
             var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
@@ -121,6 +129,11 @@ namespace Core
             itemSlot.SetItem(inventoryManager.Items[index]);
         }
 
+        /// <summary>
+        /// Called when item is removed from inventory
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="index">Index of the stack</param>
         private void OnItemRemoved(IItem item, int index)
         {
             var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
@@ -135,11 +148,14 @@ namespace Core
             inventoryManager.OnItemRemoved -= OnItemRemoved;
         }
 
+        /// <summary>
+        /// Checks if the item can be dropped
+        /// </summary>
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q) && SelectedSlot != null && !SelectedSlot.IsEmpty)
             {
-                var item = SelectedSlot.Item[^1] as Pickable;
+                var item = SelectedSlot.Items[^1] as Pickable;
                 if (item == null)
                 {
                     Debug.LogError("Item is not pickable");
@@ -150,70 +166,80 @@ namespace Core
             }
         }
 
-        public void SwapTwoItems(ItemSlot itemSlot1, ItemSlot itemSlot2)
+        /// <summary>
+        /// Swaps two items. If the items are of same type, they will be merged.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public void SwapTwoItems(ItemSlot from, ItemSlot to)
         {
-            if (itemSlot1 == null || itemSlot2 == null)
+            if (from == null || to == null)
             {
                 Debug.LogError("ItemSlot is null");
                 return;
             }
 
-            if (itemSlot1 == itemSlot2)
+            if (from == to)
             {
                 Debug.LogError("Both ItemSlot is same");
                 return;
             }
 
-            if (itemSlot1.IsEmpty)
+            if (from.IsEmpty)
             {
                 Debug.LogError("ItemSlot1 is empty");
                 return;
             }
-            
+
             bool merge = false;
-            if (!itemSlot2.IsEmpty)
+            if (!to.IsEmpty)
             {
-                if (itemSlot1.Item.GetType() == itemSlot2.Item.GetType())
+                if (from.Items.GetType() == to.Items.GetType())
                 {
-                    var item1Count = itemSlot1.Item.Count;
-                    var item2Count = itemSlot2.Item.Count;
+                    var fromList = from.Items;
+                    var toList = to.Items;
                     
-                    var item1List = itemSlot1.Item;
-                    var item2List = itemSlot2.Item;
+                    var fromCount = fromList.Count;
+                    var toCount = toList.Count;
                     
-                    if (item1Count + item2Count <= itemSlot1.Item[0].ItemAsset.stackLimit)
+                    var fromStackLimit = from.Items[0].ItemAsset.stackLimit;
+                    var toStackLimit = to.Items[0].ItemAsset.stackLimit;
+
+                    if (fromCount + toCount <= fromStackLimit)
                     {
                         var items = new List<IItem>();
-                        items.AddRange(item1List);
-                        items.AddRange(item2List);
-                        itemSlot1.SetItem(items);
-                        itemSlot2.Clear();
+                        items.AddRange(fromList);
+                        items.AddRange(toList);
+                        from.SetItem(items);
+                        to.Clear();
                         merge = true;
                     }
-                    else if (item2Count < itemSlot2.Item[0].ItemAsset.stackLimit)
+                    else if (toCount < toStackLimit)
                     {
                         var items = new List<IItem>();
-                        items.AddRange(item1List);
-                        items.AddRange(item2List.GetRange(item2Count - (itemSlot1.Item[0].ItemAsset.stackLimit - item1Count), itemSlot1.Item[0].ItemAsset.stackLimit - item1Count));
-                        itemSlot1.SetItem(items);
-                        itemSlot2.Decrease(itemSlot1.Item[0].ItemAsset.stackLimit - item1Count);
+                        items.AddRange(fromList);
+                        items.AddRange(toList.GetRange(
+                            toCount - (fromStackLimit - fromCount),
+                            fromStackLimit - fromCount));
+                        from.SetItem(items);
+                        to.Decrease(fromStackLimit - fromCount);
                     }
                 }
             }
 
-            var itemSlot1Transform = itemSlot1.transform;
-            var itemSlot2Transform = itemSlot2.transform;
-            var itemSlot1SiblingIndex = itemSlot1Transform.GetSiblingIndex();
-            var itemSlot2SiblingIndex = itemSlot2Transform.GetSiblingIndex();
+            var fromTransform = from.transform;
+            var toTransform = to.transform;
+            var fromSiblingIndex = fromTransform.GetSiblingIndex();
+            var toSiblingIndex = toTransform.GetSiblingIndex();
             if (!merge)
             {
-                itemSlot1Transform.SetSiblingIndex(itemSlot2SiblingIndex);
-                itemSlot2Transform.SetSiblingIndex(itemSlot1SiblingIndex);
+                fromTransform.SetSiblingIndex(toSiblingIndex);
+                toTransform.SetSiblingIndex(fromSiblingIndex);
             }
 
             // Change backend order
-            inventoryManager.Items[itemSlot1SiblingIndex] = itemSlot2.Item;
-            inventoryManager.Items[itemSlot2SiblingIndex] = itemSlot1.Item;
+            inventoryManager.Items[fromSiblingIndex] = to.Items;
+            inventoryManager.Items[toSiblingIndex] = from.Items;
         }
     }
 }

@@ -6,7 +6,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
+/// <summary>
+/// This class is responsible for item slot in UI. It can be used for inventory, equipment, etc. <br/>
+/// It can be used both for single item and stackable items.
+/// </summary>
 public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private TextMeshProUGUI nameText;
@@ -14,9 +17,9 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     [SerializeField] private Button button;
     [SerializeField] private TextMeshProUGUI stackText;
 
-    public List<IItem> Item { get; private set; } = new List<IItem>();
+    public List<IItem> Items { get; private set; } = new List<IItem>();
 
-    public bool IsEmpty => Item.Count == 0;
+    public bool IsEmpty => Items.Count == 0;
 
     private UIInventoryManager uiInventoryManager;
 
@@ -30,12 +33,16 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         Initialize();
     }
 
+    /// <summary>
+    /// Updates item slot
+    /// </summary>
+    /// <param name="item"></param>
     public void SetItem(List<IItem> item)
     {
         nameText.text = item[0].ItemAsset.name;
         iconImage.sprite = item[0].ItemAsset.icon;
         stackText.text = item.Count.ToString();
-        Item = item;
+        Items = item;
 
         if (IsEmpty)
         {
@@ -47,44 +54,62 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         }
     }
 
+    /// <summary>
+    /// Clears item slot
+    /// </summary>
     public void Clear()
     {
         nameText.text = "";
         iconImage.sprite = null;
         stackText.text = "";
-        Item.Clear();
+        Items.Clear();
 
         iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
     }
 
+    /// <summary>
+    /// Removes item from slot
+    /// </summary>
+    /// <param name="item"></param>
     public void Remove(IItem item)
     {
-        Item.Remove(item);
-        stackText.text = Item.Count.ToString();
-        if (Item.Count == 0)
+        Items.Remove(item);
+        stackText.text = Items.Count.ToString();
+        if (Items.Count == 0)
         {
             Clear();
             uiInventoryManager.SelectedSlot = null;
         }
     }
 
+    /// <summary>
+    /// Remove n items from slot <br/>
+    /// Starting from the end of the list
+    /// </summary>
+    /// <param name="number"></param>
     public void Decrease(int number)
     {
-        if (number > Item.Count)
+        if (number > Items.Count)
         {
             Debug.LogError($"Not enough items in slot");
             return;
         }
 
-        if (number == Item.Count)
+        if (number == 0)
+        {
+            Debug.LogError($"Number of items to decrease cannot be 0");
+            return;
+        }
+
+        if (number == Items.Count)
         {
             Clear();
             uiInventoryManager.SelectedSlot = null;
             return;
         }
 
-        Item.RemoveRange(Item.Count - number, number);
-        stackText.text = Item.Count.ToString();
+        Items.RemoveRange(Items.Count - number, number);
+        stackText.text = Items.Count.ToString();
     }
 
     public void OnClick()
@@ -99,18 +124,23 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         }
     }
 
+    /// <summary>
+    /// Called when slot is selected
+    /// </summary>
     public void OnSelect()
     {
         button.targetGraphic.color = Color.green;
     }
 
+    /// <summary>
+    /// Called when slot is deselected
+    /// </summary>
     public void OnDeselect()
     {
         button.targetGraphic.color = Color.white;
     }
 
-    private bool isDragging = false;
-
+    private bool isDragging;
     public void OnPointerDown(PointerEventData eventData)
     {
         if (IsEmpty)

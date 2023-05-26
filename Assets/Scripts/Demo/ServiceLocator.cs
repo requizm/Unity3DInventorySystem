@@ -21,7 +21,7 @@ namespace Demo
         public static ServiceLocator Current { get; private set; }
 
         /// <summary>
-        /// Initalizes the service locator with a new instance.
+        /// Initializes the service locator with a new instance.
         /// </summary>
         public static void Initialize()
         {

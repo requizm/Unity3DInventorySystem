@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    /// This is basically show/hide UI on Tab press.
+    /// </summary>
     public class UIManager : MonoBehaviour
     {
         [SerializeField] private GameObject canvas;

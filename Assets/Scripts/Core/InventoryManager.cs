@@ -6,12 +6,38 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    ///  Inventory manager
+    /// </summary>
     public class InventoryManager : IGameService
     {
+        /// <summary>
+        ///   Called when item is added to inventory
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="index">Index of the stack</param>
         public Action<IItem, int> OnItemAdded { get; set; }
+
+        /// <summary>
+        ///   Called when item is removed from inventory
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="index">Index of the stack</param>
         public Action<IItem, int> OnItemRemoved { get; set; }
+
+        /// <summary>
+        /// Current items in inventory
+        /// </summary>
         public List<List<IItem>> Items { get; set; }
+
+        /// <summary>
+        ///  Count of items in inventory
+        /// </summary>
         public int Count => Items.Count(i => i.Count > 0);
+
+        /// <summary>
+        /// Limit of items in inventory. Default is 15.
+        /// </summary>
         public int Limit { get; set; } = 15; // TODO: Make it dynamic
 
         public InventoryManager()
@@ -30,10 +56,15 @@ namespace Core
             Debug.Log($"InventoryManager initialized");
         }
 
+        /// <summary>
+        /// Add item to inventory
+        /// </summary>
+        /// <param name="item"></param>
         public void AddItem(IItem item)
         {
             // Check if item is stackable
-            var stackIndex = Items.FindIndex(i => i.Any(j => j.ItemAsset == item.ItemAsset && i.Count < j.ItemAsset.stackLimit));
+            var stackIndex = Items.FindIndex(i =>
+                i.Any(j => j.ItemAsset == item.ItemAsset && i.Count < j.ItemAsset.stackLimit));
             if (stackIndex == -1)
             {
                 stackIndex = Items.FindIndex(i => i.Count == 0);
@@ -51,6 +82,10 @@ namespace Core
             Debug.Log($"{item.ItemAsset.name}:{item.Id} added");
         }
 
+        /// <summary>
+        ///  Remove item from inventory
+        /// </summary>
+        /// <param name="item"></param>
         public void RemoveItem(IItem item)
         {
             var stackIndex = Items.FindIndex(i => i.Contains(item));

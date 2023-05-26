@@ -2,6 +2,9 @@
 
 namespace Core
 {
+    /// <summary>
+    /// ItemAsset is a ScriptableObject that contains all item data.
+    /// </summary>
     [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
     public class ItemAsset : ScriptableObject
     {

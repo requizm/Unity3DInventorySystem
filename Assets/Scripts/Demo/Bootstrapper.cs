@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Demo
 {
+    /// <summary>
+    /// Bootstrapper is a class that initializes all services.
+    /// </summary>
     public static class Bootstrapper
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
