@@ -42,7 +42,7 @@ namespace Core
         {
             if (!IsPicked && Input.GetKeyDown(KeyCode.E))
             {
-                var distance = Vector3.Distance(transform.position, player.transform.position);
+                var distance = Mathf.Abs(Vector3.Distance(transform.position, player.transform.position));
                 if (distance <= distanceToPick)
                 {
                     Pick();
@@ -52,12 +52,22 @@ namespace Core
 
         public void Pick()
         {
+            if (IsPicked)
+            {
+                Debug.LogError($"{itemAsset.name}:{Id} already picked");
+                return;
+            }
             IsPicked = true;
             inventoryManager.AddItem(this);
         }
 
         public void Drop()
         {
+            if (!IsPicked)
+            {
+                Debug.LogError($"{itemAsset.name}:{Id} is not picked");
+                return;
+            }
             IsPicked = false;
             inventoryManager.RemoveItem(this);
         }

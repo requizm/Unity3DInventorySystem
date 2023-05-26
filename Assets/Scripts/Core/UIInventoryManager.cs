@@ -89,6 +89,7 @@ namespace Core
             }
 
             availableItemSlot.SetItem(item);
+            SelectedItem = availableItemSlot;
         }
 
         private void OnItemRemoved(IItem item)

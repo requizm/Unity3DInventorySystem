@@ -5,11 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class ItemSlot : MonoBehaviour, IBinder, ISelectable
+public class ItemSlot : MonoBehaviour, IBinder
 {
     [SerializeField] TextMeshProUGUI nameText;
     [SerializeField] Image iconImage;
-    private Button button;
+    [SerializeField] private Button button;
 
     public IItem Item { get; private set; }
 
@@ -20,8 +20,6 @@ public class ItemSlot : MonoBehaviour, IBinder, ISelectable
     public void Initialize()
     {
         uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
-        button = GetComponent<Button>();
-        button.onClick.AddListener(OnClick);
     }
 
     private void Awake()
@@ -43,13 +41,13 @@ public class ItemSlot : MonoBehaviour, IBinder, ISelectable
         Item = null;
     }
 
-    private void OnClick()
+    public void OnClick()
     {
-        if (this == uiInventoryManager.SelectedItem)
+        if (this == uiInventoryManager.SelectedItem || IsEmpty)
         {
             uiInventoryManager.SelectedItem = null;
         }
-        else if(uiInventoryManager.SelectedItem == null || !uiInventoryManager.SelectedItem.IsEmpty)
+        else
         {
             uiInventoryManager.SelectedItem = this;
         }

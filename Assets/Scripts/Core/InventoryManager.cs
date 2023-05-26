@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Core
 {
-    public class InventoryManager : IInventoryManager, IGameService
+    public class InventoryManager : IGameService
     {
         public Action<IItem> OnItemAdded { get; set; }
         public Action<IItem> OnItemRemoved { get; set; }
