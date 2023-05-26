@@ -191,17 +191,17 @@ namespace Core
                 return;
             }
 
-            bool merge = false;
+            var swapNeeded = true;
             if (!to.IsEmpty)
             {
                 if (from.Items.GetType() == to.Items.GetType())
                 {
                     var fromList = from.Items;
                     var toList = to.Items;
-                    
+
                     var fromCount = fromList.Count;
                     var toCount = toList.Count;
-                    
+
                     var fromStackLimit = from.Items[0].ItemAsset.stackLimit;
                     var toStackLimit = to.Items[0].ItemAsset.stackLimit;
 
@@ -210,19 +210,19 @@ namespace Core
                         var items = new List<IItem>();
                         items.AddRange(fromList);
                         items.AddRange(toList);
-                        from.SetItem(items);
-                        to.Clear();
-                        merge = true;
+                        to.SetItem(items);
+                        from.Clear();
+                        swapNeeded = false;
                     }
                     else if (toCount < toStackLimit)
                     {
                         var items = new List<IItem>();
-                        items.AddRange(fromList);
-                        items.AddRange(toList.GetRange(
-                            toCount - (fromStackLimit - fromCount),
-                            fromStackLimit - fromCount));
-                        from.SetItem(items);
-                        to.Decrease(fromStackLimit - fromCount);
+                        items.AddRange(toList);
+                        var count = toStackLimit - toCount;
+                        items.AddRange(fromList.GetRange(fromCount - count, count));
+                        to.SetItem(items);
+                        from.Decrease(count);
+                        swapNeeded = false;
                     }
                 }
             }
@@ -231,15 +231,20 @@ namespace Core
             var toTransform = to.transform;
             var fromSiblingIndex = fromTransform.GetSiblingIndex();
             var toSiblingIndex = toTransform.GetSiblingIndex();
-            if (!merge)
+            if (swapNeeded)
             {
                 fromTransform.SetSiblingIndex(toSiblingIndex);
                 toTransform.SetSiblingIndex(fromSiblingIndex);
             }
 
             // Change backend order
-            inventoryManager.Items[fromSiblingIndex] = to.Items;
-            inventoryManager.Items[toSiblingIndex] = from.Items;
+            inventoryManager.Items[fromSiblingIndex] = swapNeeded ? to.Items : from.Items;
+            inventoryManager.Items[toSiblingIndex] = swapNeeded ? from.Items : to.Items;
+
+            if (SelectedSlot != null && SelectedSlot.IsEmpty)
+            {
+                SelectedSlot = null;
+            }
         }
     }
 }
