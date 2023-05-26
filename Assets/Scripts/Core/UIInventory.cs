@@ -1,4 +1,5 @@
-﻿using Demo;
+﻿using System.Collections.Generic;
+using Demo;
 using UnityEngine;
 
 namespace Core
@@ -7,6 +8,8 @@ namespace Core
     {
         [SerializeField] public GameObject inventoryPanel;
         [SerializeField] public GameObject itemSlotPrefab;
+        
+        public List<ItemSlot> ItemSlots { get; set; } = new List<ItemSlot>();
 
         private UIInventoryManager uiInventoryManager;
         private InventoryManager inventoryManager;
@@ -66,6 +69,8 @@ namespace Core
                 {
                     itemSlotComponent.Clear();
                 }
+                
+                ItemSlots.Add(itemSlotComponent);
             }
         }
         
@@ -76,9 +81,7 @@ namespace Core
         /// <param name="index">Index of the stack</param>
         private void OnItemAdded(IItem item, int index)
         {
-            var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
-
-            var itemSlot = itemSlots[index];
+            var itemSlot = ItemSlots[index];
             itemSlot.SetItem(inventoryManager.Items[index]);
         }
 
@@ -89,9 +92,7 @@ namespace Core
         /// <param name="index">Index of the stack</param>
         private void OnItemRemoved(IItem item, int index)
         {
-            var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
-
-            var itemSlot = itemSlots[index];
+            var itemSlot = ItemSlots[index];
             itemSlot.Remove(item);
         }
 
