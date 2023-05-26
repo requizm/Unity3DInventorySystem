@@ -36,7 +36,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     /// <summary>
     /// Updates item slot
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">Count should be greater than 0</param>
     public void SetItem(List<IItem> item)
     {
         nameText.text = item[0].ItemAsset.name;

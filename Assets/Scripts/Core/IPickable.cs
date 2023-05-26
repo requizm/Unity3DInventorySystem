@@ -14,7 +14,7 @@ public interface IPickable
     public void Pick();
 
     /// <summary>
-    /// Ian be called when the player wants to drop the item.
+    /// It can be called when the player wants to drop the item.
     /// </summary>
     public void Drop();
 }
