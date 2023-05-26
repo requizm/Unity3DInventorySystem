@@ -36,6 +36,15 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         iconImage.sprite = item[0].ItemAsset.icon;
         stackText.text = item.Count.ToString();
         Item = item;
+
+        if (IsEmpty)
+        {
+            iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
+        }
+        else
+        {
+            iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 1f);
+        }
     }
 
     public void Clear()
@@ -44,6 +53,8 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         iconImage.sprite = null;
         stackText.text = "";
         Item.Clear();
+        
+        iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
     }
     
     public void Decrease(IItem item)
@@ -79,17 +90,23 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         button.targetGraphic.color = Color.white;
     }
 
+    private bool isDragging = false;
     public void OnPointerDown(PointerEventData eventData)
     {
         if (IsEmpty)
         {
             return;
         }
+        isDragging = true;
         uiInventoryManager.DragStartItemSlot = this;
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (!isDragging)
+        {
+            return;
+        }
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = Input.mousePosition;
         List<RaycastResult> results = new List<RaycastResult>();
@@ -110,6 +127,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         {
             uiInventoryManager.DragStartItemSlot = null;
         }
+        isDragging = false;
     }
 
     public void OnDragStart()
