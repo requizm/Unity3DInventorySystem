@@ -79,7 +79,7 @@ namespace Core
             }
 
             var itemSlot = ItemSlots[realIndex];
-            itemSlot.SetItem(inventoryManager.Items[realIndex]);
+            itemSlot.SetItem(inventoryManager.Items[index]);
         }
 
         /// <summary>

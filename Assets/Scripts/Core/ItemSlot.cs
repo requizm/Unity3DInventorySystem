@@ -46,8 +46,8 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         nameText.text = item[0].ItemAsset.assetName;
         iconImage.sprite = item[0].ItemAsset.icon;
         stackText.text = item.Count.ToString();
-        Items = item;
-        
+        Items = new List<IItem>(item);
+
         EmptyIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
         FilledIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 1f);
         NotFilledIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0.5f);
@@ -64,7 +64,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         iconImage.sprite = null;
         stackText.text = "";
         Items.Clear();
-        
+
         EmptyIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
         NotFilledIconColor = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0.5f);
 
@@ -145,6 +145,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     }
 
     private bool isDragging;
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (IsEmpty)
@@ -199,12 +200,12 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
             return;
         }
     }
-    
+
     public void SetColor(Color color)
     {
         iconImage.color = color;
     }
-    
+
     public void ResetColor()
     {
         iconImage.color = IsEmpty ? EmptyIconColor : FilledIconColor;

@@ -72,10 +72,12 @@ namespace Core
         }
 
         private InventoryManager inventoryManager;
+        private UIInventory uiInventory;
 
         public void Initialize()
         {
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+            uiInventory = ServiceLocator.Current.Get<UIInventory>();
         }
 
         /// <summary>
@@ -149,9 +151,16 @@ namespace Core
                 toTransform.SetSiblingIndex(fromSiblingIndex);
             }
 
+            var pageIndex = uiInventory.CurrentPage.pageIndex;
+            var fromItemIndex = pageIndex * inventoryManager.PageLimit + fromSiblingIndex;
+            var toItemIndex = pageIndex * inventoryManager.PageLimit + toSiblingIndex;
+
+            var fromItemsCopy = new List<IItem>(to.Items);
+            var toItemsCopy = new List<IItem>(from.Items);
+
             // Change backend order
-            inventoryManager.Items[fromSiblingIndex] = swapNeeded ? to.Items : from.Items;
-            inventoryManager.Items[toSiblingIndex] = swapNeeded ? from.Items : to.Items;
+            inventoryManager.Items[fromItemIndex] = swapNeeded ? toItemsCopy : fromItemsCopy;
+            inventoryManager.Items[toItemIndex] = swapNeeded ? fromItemsCopy : toItemsCopy;
 
             if (SelectedSlot != null && SelectedSlot.IsEmpty)
             {

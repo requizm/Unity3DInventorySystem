@@ -66,7 +66,7 @@ namespace Core
         {
             // Check if item is stackable
             var stackIndex = Items.FindIndex(i =>
-                i.Any(j => j.ItemAsset == item.ItemAsset && i.Count < j.ItemAsset.stackLimit));
+                i.Any(j => j.ItemAsset == item.ItemAsset && i.Count > 0 && i.Count < j.ItemAsset.stackLimit));
             if (stackIndex == -1)
             {
                 stackIndex = Items.FindIndex(i => i.Count == 0);
@@ -97,10 +97,10 @@ namespace Core
                 return;
             }
 
-            Items[stackIndex].Remove(item);
-
             item.OnRemove();
             OnItemRemoved?.Invoke(item, stackIndex);
+            Items[stackIndex].Remove(item);
+
             Debug.Log($"{item.ItemAsset.assetName}:{item.Id} removed");
         }
     }
