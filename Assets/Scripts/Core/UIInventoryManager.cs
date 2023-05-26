@@ -9,23 +9,23 @@ namespace Core
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject itemSlotPrefab;
 
-        private ItemSlot selectedItem;
+        private ItemSlot selectedSlot;
 
-        public ItemSlot SelectedItem
+        public ItemSlot SelectedSlot
         {
-            get => selectedItem;
+            get => selectedSlot;
             set
             {
-                if (selectedItem != null)
+                if (selectedSlot != null)
                 {
-                    selectedItem.OnDeselect();
+                    selectedSlot.OnDeselect();
                 }
 
-                selectedItem = value;
+                selectedSlot = value;
 
-                if (selectedItem != null)
+                if (selectedSlot != null)
                 {
-                    selectedItem.OnSelect();
+                    selectedSlot.OnSelect();
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace Core
                     continue;
                 }
 
-                if (item != null)
+                if (item.Count > 0)
                 {
                     itemSlotComponent.SetItem(item);
                 }
@@ -113,50 +113,20 @@ namespace Core
             }
         }
 
-        private void OnItemAdded(IItem item)
+        private void OnItemAdded(IItem item, int index)
         {
             var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
-            ItemSlot availableItemSlot = null;
-            foreach (var itemSlot in itemSlots)
-            {
-                if (itemSlot.IsEmpty)
-                {
-                    availableItemSlot = itemSlot;
-                    break;
-                }
-            }
 
-            if (availableItemSlot == null)
-            {
-                Debug.LogError("Item added to backend but no empty slot found!!");
-                return;
-            }
-
-            availableItemSlot.SetItem(item);
-            SelectedItem = availableItemSlot;
+            var itemSlot = itemSlots[index];
+            itemSlot.SetItem(inventoryManager.Items[index]);
         }
 
-        private void OnItemRemoved(IItem item)
+        private void OnItemRemoved(IItem item, int index)
         {
             var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
-            ItemSlot availableItemSlot = null;
-            foreach (var itemSlot in itemSlots)
-            {
-                if (itemSlot.Item == item)
-                {
-                    availableItemSlot = itemSlot;
-                    break;
-                }
-            }
 
-            if (availableItemSlot == null)
-            {
-                Debug.LogError("Item removed from backend but no slot found!!");
-                return;
-            }
-
-            availableItemSlot.Clear();
-            SelectedItem = null;
+            var itemSlot = itemSlots[index];
+            itemSlot.Decrease(item);
         }
 
         private void OnDestroy()
@@ -167,9 +137,9 @@ namespace Core
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q) && SelectedItem != null && !SelectedItem.IsEmpty)
+            if (Input.GetKeyDown(KeyCode.Q) && SelectedSlot != null && !SelectedSlot.IsEmpty)
             {
-                var item = SelectedItem.Item as IPickable;
+                var item = SelectedSlot.Item[^1] as Pickable;
                 if (item == null)
                 {
                     Debug.LogError("Item is not pickable");

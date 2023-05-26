@@ -7,6 +7,7 @@ namespace Core
     {
         [SerializeField] public int id;
         [SerializeField] public string name;
+        [SerializeField] public int stackLimit;
         [SerializeField] public GameObject prefab;
         [SerializeField] public Sprite icon;
     }

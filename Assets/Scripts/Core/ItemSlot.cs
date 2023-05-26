@@ -9,13 +9,14 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] TextMeshProUGUI nameText;
-    [SerializeField] Image iconImage;
+    [SerializeField] private TextMeshProUGUI nameText;
+    [SerializeField] private Image iconImage;
     [SerializeField] private Button button;
+    [SerializeField] private TextMeshProUGUI stackText;
 
-    public IItem Item { get; private set; }
+    public List<IItem> Item { get; private set; } = new List<IItem>();
 
-    public bool IsEmpty => Item == null;
+    public bool IsEmpty => Item.Count == 0;
 
     private UIInventoryManager uiInventoryManager;
 
@@ -29,10 +30,11 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         Initialize();
     }
 
-    public void SetItem(IItem item)
+    public void SetItem(List<IItem> item)
     {
-        nameText.text = item.ItemAsset.name;
-        iconImage.sprite = item.ItemAsset.icon;
+        nameText.text = item[0].ItemAsset.name;
+        iconImage.sprite = item[0].ItemAsset.icon;
+        stackText.text = item.Count.ToString();
         Item = item;
     }
 
@@ -40,18 +42,30 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     {
         nameText.text = "";
         iconImage.sprite = null;
-        Item = null;
+        stackText.text = "";
+        Item.Clear();
+    }
+    
+    public void Decrease(IItem item)
+    {
+        Item.Remove(item);
+        stackText.text = Item.Count.ToString();
+        if (Item.Count == 0)
+        {
+            Clear();
+            uiInventoryManager.SelectedSlot = null;
+        }
     }
 
     public void OnClick()
     {
-        if (this == uiInventoryManager.SelectedItem || IsEmpty)
+        if (this == uiInventoryManager.SelectedSlot || IsEmpty)
         {
-            uiInventoryManager.SelectedItem = null;
+            uiInventoryManager.SelectedSlot = null;
         }
         else
         {
-            uiInventoryManager.SelectedItem = this;
+            uiInventoryManager.SelectedSlot = this;
         }
     }
 

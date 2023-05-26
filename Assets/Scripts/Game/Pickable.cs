@@ -57,6 +57,7 @@ namespace Core
                 Debug.LogError($"{itemAsset.name}:{Id} already picked");
                 return;
             }
+
             IsPicked = true;
             inventoryManager.AddItem(this);
         }
@@ -68,6 +69,7 @@ namespace Core
                 Debug.LogError($"{itemAsset.name}:{Id} is not picked");
                 return;
             }
+
             IsPicked = false;
             inventoryManager.RemoveItem(this);
         }

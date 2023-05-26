@@ -8,20 +8,20 @@ namespace Core
 {
     public class InventoryManager : IGameService
     {
-        public Action<IItem> OnItemAdded { get; set; }
-        public Action<IItem> OnItemRemoved { get; set; }
-        public List<IItem> Items { get; set; }
-        public int Count => Items.Count(i => i != null);
+        public Action<IItem, int> OnItemAdded { get; set; }
+        public Action<IItem, int> OnItemRemoved { get; set; }
+        public List<List<IItem>> Items { get; set; }
+        public int Count => Items.Count(i => i.Count > 0);
         public int Limit { get; set; } = 15; // TODO: Make it dynamic
 
         public InventoryManager()
         {
-            Items = new List<IItem>();
+            Items = new List<List<IItem>>();
             Items.Capacity = Limit;
 
             for (int i = 0; i < Items.Capacity; i++)
             {
-                Items.Add(null);
+                Items.Add(new List<IItem>());
             }
         }
 
@@ -32,37 +32,38 @@ namespace Core
 
         public void AddItem(IItem item)
         {
-            if (Items.Any(i => i != null && i.Id == item.Id))
+            // Check if item is stackable
+            var stackIndex = Items.FindIndex(i => i.Any(j => j.ItemAsset == item.ItemAsset && i.Count < j.ItemAsset.stackLimit));
+            if (stackIndex == -1)
             {
-                Debug.LogError($"{item.ItemAsset.name}:{item.Id} already exists");
-                return;
+                stackIndex = Items.FindIndex(i => i.Count == 0);
+                if (stackIndex == -1)
+                {
+                    Debug.LogError($"Inventory is full");
+                    return;
+                }
             }
 
-            var index = Items.FindIndex(i => i == null);
-            if (index == -1)
-            {
-                Debug.LogError($"Inventory is full");
-                return;
-            }
+            Items[stackIndex].Add(item);
 
-            Items[index] = item;
             item.OnAdd();
-            OnItemAdded?.Invoke(item);
+            OnItemAdded?.Invoke(item, stackIndex);
             Debug.Log($"{item.ItemAsset.name}:{item.Id} added");
         }
 
         public void RemoveItem(IItem item)
         {
-            if (Items.All(i => i != null && i.Id != item.Id))
+            var stackIndex = Items.FindIndex(i => i.Contains(item));
+            if (stackIndex == -1)
             {
-                Debug.LogError($"{item.ItemAsset.name}:{item.Id} does not exist");
+                Debug.LogError($"Item {item.ItemAsset.name}:{item.Id} not found");
                 return;
             }
 
-            var index = Items.FindIndex(i => i.Id == item.Id);
-            Items[index] = null;
+            Items[stackIndex].Remove(item);
+
             item.OnRemove();
-            OnItemRemoved?.Invoke(item);
+            OnItemRemoved?.Invoke(item, stackIndex);
             Debug.Log($"{item.ItemAsset.name}:{item.Id} removed");
         }
     }
