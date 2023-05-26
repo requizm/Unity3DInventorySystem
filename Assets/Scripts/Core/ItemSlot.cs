@@ -1,11 +1,13 @@
+using System.Collections.Generic;
 using Core;
 using Demo;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class ItemSlot : MonoBehaviour, IBinder
+public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] TextMeshProUGUI nameText;
     [SerializeField] Image iconImage;
@@ -61,5 +63,51 @@ public class ItemSlot : MonoBehaviour, IBinder
     public void OnDeselect()
     {
         button.targetGraphic.color = Color.white;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (IsEmpty)
+        {
+            return;
+        }
+        uiInventoryManager.DragStartItemSlot = this;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = Input.mousePosition;
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, results);
+        var found = false;
+        foreach (var result in results)
+        {
+            var itemSlot = result.gameObject.GetComponent<ItemSlot>();
+            if (itemSlot != null)
+            {
+                uiInventoryManager.DragEndItemSlot = itemSlot;
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found)
+        {
+            uiInventoryManager.DragStartItemSlot = null;
+        }
+    }
+
+    public void OnDragStart()
+    {
+        
+    }
+    
+    public void OnDragEnd(bool success)
+    {
+        if (success && uiInventoryManager.DragStartItemSlot != uiInventoryManager.DragEndItemSlot)
+        {
+            uiInventoryManager.SwapTwoItems(uiInventoryManager.DragStartItemSlot, uiInventoryManager.DragEndItemSlot);
+        }
     }
 }

@@ -22,11 +22,55 @@ namespace Core
                 }
 
                 selectedItem = value;
-                
+
                 if (selectedItem != null)
                 {
                     selectedItem.OnSelect();
                 }
+            }
+        }
+
+        private ItemSlot dragStartItemSlot, dragEndItemSlot;
+
+        public ItemSlot DragStartItemSlot
+        {
+            get { return dragStartItemSlot; }
+            set
+            {
+                if (dragStartItemSlot != null)
+                {
+                    dragStartItemSlot.OnDragEnd(false);
+                }
+
+                dragStartItemSlot = value;
+
+                if (dragStartItemSlot != null)
+                {
+                    dragStartItemSlot.OnDragStart();
+                }
+
+                dragEndItemSlot = null;
+            }
+        }
+
+        public ItemSlot DragEndItemSlot
+        {
+            get { return dragEndItemSlot; }
+            set
+            {
+                if (dragEndItemSlot != null)
+                {
+                    dragEndItemSlot.OnDragEnd(false);
+                }
+
+                dragEndItemSlot = value;
+
+                if (dragEndItemSlot != null)
+                {
+                    dragEndItemSlot.OnDragEnd(true);
+                }
+
+                dragStartItemSlot = null;
             }
         }
 
@@ -131,8 +175,41 @@ namespace Core
                     Debug.LogError("Item is not pickable");
                     return;
                 }
+
                 item.Drop();
             }
+        }
+
+        public void SwapTwoItems(ItemSlot itemSlot1, ItemSlot itemSlot2)
+        {
+            if (itemSlot1 == null || itemSlot2 == null)
+            {
+                Debug.LogError("ItemSlot is null");
+                return;
+            }
+
+            if (itemSlot1 == itemSlot2)
+            {
+                Debug.LogError("Both ItemSlot is same");
+                return;
+            }
+
+            if (itemSlot1.IsEmpty)
+            {
+                Debug.LogError("ItemSlot1 is empty");
+                return;
+            }
+
+            var itemSlot1Transform = itemSlot1.transform;
+            var itemSlot2Transform = itemSlot2.transform;
+            var itemSlot1SiblingIndex = itemSlot1Transform.GetSiblingIndex();
+            var itemSlot2SiblingIndex = itemSlot2Transform.GetSiblingIndex();
+            itemSlot1Transform.SetSiblingIndex(itemSlot2SiblingIndex);
+            itemSlot2Transform.SetSiblingIndex(itemSlot1SiblingIndex);
+
+            // Change backend order
+            inventoryManager.Items[itemSlot1SiblingIndex] = itemSlot2.Item;
+            inventoryManager.Items[itemSlot2SiblingIndex] = itemSlot1.Item;
         }
     }
 }
