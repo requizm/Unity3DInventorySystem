@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Demo;
 using UnityEngine;
 
@@ -126,7 +126,7 @@ namespace Core
             var itemSlots = inventoryPanel.GetComponentsInChildren<ItemSlot>();
 
             var itemSlot = itemSlots[index];
-            itemSlot.Decrease(item);
+            itemSlot.Remove(item);
         }
 
         private void OnDestroy()
@@ -169,13 +169,47 @@ namespace Core
                 Debug.LogError("ItemSlot1 is empty");
                 return;
             }
+            
+            bool merge = false;
+            if (!itemSlot2.IsEmpty)
+            {
+                if (itemSlot1.Item.GetType() == itemSlot2.Item.GetType())
+                {
+                    var item1Count = itemSlot1.Item.Count;
+                    var item2Count = itemSlot2.Item.Count;
+                    
+                    var item1List = itemSlot1.Item;
+                    var item2List = itemSlot2.Item;
+                    
+                    if (item1Count + item2Count <= itemSlot1.Item[0].ItemAsset.stackLimit)
+                    {
+                        var items = new List<IItem>();
+                        items.AddRange(item1List);
+                        items.AddRange(item2List);
+                        itemSlot1.SetItem(items);
+                        itemSlot2.Clear();
+                        merge = true;
+                    }
+                    else if (item2Count < itemSlot2.Item[0].ItemAsset.stackLimit)
+                    {
+                        var items = new List<IItem>();
+                        items.AddRange(item1List);
+                        items.AddRange(item2List.GetRange(item2Count - (itemSlot1.Item[0].ItemAsset.stackLimit - item1Count), itemSlot1.Item[0].ItemAsset.stackLimit - item1Count));
+                        itemSlot1.SetItem(items);
+                        itemSlot2.Decrease(itemSlot1.Item[0].ItemAsset.stackLimit - item1Count);
+                    }
+                }
+            }
 
             var itemSlot1Transform = itemSlot1.transform;
             var itemSlot2Transform = itemSlot2.transform;
             var itemSlot1SiblingIndex = itemSlot1Transform.GetSiblingIndex();
             var itemSlot2SiblingIndex = itemSlot2Transform.GetSiblingIndex();
-            itemSlot1Transform.SetSiblingIndex(itemSlot2SiblingIndex);
-            itemSlot2Transform.SetSiblingIndex(itemSlot1SiblingIndex);
+            if (!merge)
+            {
+                itemSlot1Transform.SetSiblingIndex(itemSlot2SiblingIndex);
+                itemSlot2Transform.SetSiblingIndex(itemSlot1SiblingIndex);
+            }
 
             // Change backend order
             inventoryManager.Items[itemSlot1SiblingIndex] = itemSlot2.Item;

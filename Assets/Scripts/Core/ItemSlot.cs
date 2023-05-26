@@ -53,11 +53,11 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         iconImage.sprite = null;
         stackText.text = "";
         Item.Clear();
-        
+
         iconImage.color = new Color(iconImage.color.r, iconImage.color.g, iconImage.color.b, 0f);
     }
-    
-    public void Decrease(IItem item)
+
+    public void Remove(IItem item)
     {
         Item.Remove(item);
         stackText.text = Item.Count.ToString();
@@ -66,6 +66,25 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
             Clear();
             uiInventoryManager.SelectedSlot = null;
         }
+    }
+
+    public void Decrease(int number)
+    {
+        if (number > Item.Count)
+        {
+            Debug.LogError($"Not enough items in slot");
+            return;
+        }
+
+        if (number == Item.Count)
+        {
+            Clear();
+            uiInventoryManager.SelectedSlot = null;
+            return;
+        }
+
+        Item.RemoveRange(Item.Count - number, number);
+        stackText.text = Item.Count.ToString();
     }
 
     public void OnClick()
@@ -91,12 +110,14 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     }
 
     private bool isDragging = false;
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (IsEmpty)
         {
             return;
         }
+
         isDragging = true;
         uiInventoryManager.DragStartItemSlot = this;
     }
@@ -107,6 +128,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         {
             return;
         }
+
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = Input.mousePosition;
         List<RaycastResult> results = new List<RaycastResult>();
@@ -122,19 +144,19 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
                 break;
             }
         }
-        
+
         if (!found)
         {
             uiInventoryManager.DragStartItemSlot = null;
         }
+
         isDragging = false;
     }
 
     public void OnDragStart()
     {
-        
     }
-    
+
     public void OnDragEnd(bool success)
     {
         if (success && uiInventoryManager.DragStartItemSlot != uiInventoryManager.DragEndItemSlot)
