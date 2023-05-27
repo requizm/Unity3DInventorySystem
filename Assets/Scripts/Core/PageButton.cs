@@ -8,7 +8,7 @@ namespace Core
     [RequireComponent(typeof(Button))]
     public class PageButton : MonoBehaviour
     {
-        public int pageIndex;
+        [HideInInspector] public int pageIndex;
 
         private UIInventory uiInventory;
 
@@ -16,7 +16,7 @@ namespace Core
         {
             uiInventory = ServiceLocator.Current.Get<UIInventory>();
         }
-        
+
         public void SetName(string name)
         {
             GetComponentInChildren<TextMeshProUGUI>().text = name;
