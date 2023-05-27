@@ -8,7 +8,7 @@ public interface IItem
     /// <summary>
     /// ItemAsset is a ScriptableObject that contains all the data for the type of item.
     /// </summary>
-    public ItemAsset ItemAsset { get; }
+    public IItemAsset ItemAsset { get; }
 
     /// <summary>
     /// Id is a unique identifier for the item instance.

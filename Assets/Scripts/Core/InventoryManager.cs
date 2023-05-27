@@ -66,7 +66,7 @@ namespace Core
         {
             // Check if item is stackable
             var stackIndex = Items.FindIndex(i =>
-                i.Any(j => j.ItemAsset == item.ItemAsset && i.Count > 0 && i.Count < j.ItemAsset.stackLimit));
+                i.Any(j => j.ItemAsset == item.ItemAsset && i.Count > 0 && i.Count < j.ItemAsset.StackLimit));
             if (stackIndex == -1)
             {
                 stackIndex = Items.FindIndex(i => i.Count == 0);
@@ -81,7 +81,7 @@ namespace Core
 
             item.OnAdd();
             OnItemAdded?.Invoke(item, stackIndex);
-            Debug.Log($"{item.ItemAsset.assetName}:{item.Id} added");
+            Debug.Log($"{item.ItemAsset.AssetName}:{item.Id} added");
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Core
             var stackIndex = Items.FindIndex(i => i.Contains(item));
             if (stackIndex == -1)
             {
-                Debug.LogError($"Item {item.ItemAsset.assetName}:{item.Id} not found");
+                Debug.LogError($"Item {item.ItemAsset.AssetName}:{item.Id} not found");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace Core
             OnItemRemoved?.Invoke(item, stackIndex);
             Items[stackIndex].Remove(item);
 
-            Debug.Log($"{item.ItemAsset.assetName}:{item.Id} removed");
+            Debug.Log($"{item.ItemAsset.AssetName}:{item.Id} removed");
         }
     }
 }

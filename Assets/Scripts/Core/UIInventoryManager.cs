@@ -116,8 +116,8 @@ namespace Core
                     var fromCount = fromList.Count;
                     var toCount = toList.Count;
 
-                    var fromStackLimit = from.Items[0].ItemAsset.stackLimit;
-                    var toStackLimit = to.Items[0].ItemAsset.stackLimit;
+                    var fromStackLimit = from.Items[0].ItemAsset.StackLimit;
+                    var toStackLimit = to.Items[0].ItemAsset.StackLimit;
 
                     if (fromCount + toCount <= fromStackLimit)
                     {

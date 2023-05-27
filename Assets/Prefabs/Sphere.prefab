@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f67813c87acb4f45aa02cca7e537abbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemAsset: {fileID: 11400000, guid: f21038e057ca1dc48903e962300330ba, type: 2}
+  soItemAsset: {fileID: 11400000, guid: b1a5943a7f48dfb4ba772694ff5eeae4, type: 2}
   distanceToPick: 2
   visual: {fileID: 8725271697402805182}
 --- !u!1 &1028692805534928026

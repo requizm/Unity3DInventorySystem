@@ -5,12 +5,12 @@ namespace Core
 {
     public class Pickable : MonoBehaviour, IItem, IPickable, IBinder
     {
-        [SerializeField] private ItemAsset itemAsset;
+        [SerializeField] private SOItemAsset soItemAsset;
         [SerializeField] private float distanceToPick = 2f;
 
         [SerializeField] private GameObject visual;
 
-        public ItemAsset ItemAsset => itemAsset;
+        public IItemAsset ItemAsset => soItemAsset;
         public int Id => GetInstanceID();
 
         public bool IsPicked { get; set; } = false;
@@ -28,14 +28,14 @@ namespace Core
         public void OnAdd()
         {
             visual.SetActive(false);
-            Debug.Log($"Internal {itemAsset.assetName} added");
+            Debug.Log($"Internal {soItemAsset.AssetName} added");
         }
 
         public void OnRemove()
         {
             visual.transform.position = player.transform.position + player.transform.forward;
             visual.SetActive(true);
-            Debug.Log($"Internal {itemAsset.assetName} removed");
+            Debug.Log($"Internal {soItemAsset.AssetName} removed");
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Core
         {
             if (IsPicked)
             {
-                Debug.LogError($"{itemAsset.assetName}:{Id} already picked");
+                Debug.LogError($"{soItemAsset.AssetName}:{Id} already picked");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace Core
         {
             if (!IsPicked)
             {
-                Debug.LogError($"{itemAsset.assetName}:{Id} is not picked");
+                Debug.LogError($"{soItemAsset.AssetName}:{Id} is not picked");
                 return;
             }
 
