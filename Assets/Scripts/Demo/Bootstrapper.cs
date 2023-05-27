@@ -12,6 +12,13 @@ namespace Demo
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
         {
+            var sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (sceneName != "SampleScene")
+            {
+                Debug.Log($"Bootstrapper not initialized for scene {sceneName}");
+                return;
+            }
+
             // Initialize default service locator.
             ServiceLocator.Initialize();
 
@@ -24,6 +31,8 @@ namespace Demo
             ServiceLocator.Current.Register(new UIInventorySearcher());
 
             ServiceLocator.Current.InitializeServices();
+
+            Debug.Log("Bootstrapper initialized");
         }
     }
 }
