@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    /// Pick interaction starts from here. <br/>
+    /// </summary>
     public class Pickable : MonoBehaviour, IItem, IPickable, IBinder
     {
         [SerializeField] private SOItemAsset soItemAsset;

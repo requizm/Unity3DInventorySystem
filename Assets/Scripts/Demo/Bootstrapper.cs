@@ -5,13 +5,14 @@ using UnityEngine;
 namespace Demo
 {
     /// <summary>
-    /// Bootstrapper is a class that initializes all services.
+    /// Initializes all services.
     /// </summary>
     public static class Bootstrapper
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
         {
+            // Skip if not in SampleScene. This is for PlayMode tests.
             var sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             if (sceneName != "SampleScene")
             {

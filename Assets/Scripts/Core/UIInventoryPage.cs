@@ -5,12 +5,13 @@ using UnityEngine;
 namespace Core
 {
     /// <summary>
-    /// Single page of inventory
+    /// Single page of inventory. <br/>
+    /// When the page is created, it creates the empty item slots.
     /// </summary>
     public class UIInventoryPage : MonoBehaviour
     {
-        [HideInInspector] public GameObject inventoryPanel;
-        [HideInInspector] public int pageIndex = -1;
+        public GameObject InventoryPanel { get; set; }
+        public int PageIndex { get; set; } = -1;
 
         private GameObject itemSlotPrefab;
 
@@ -22,7 +23,8 @@ namespace Core
 
         public void Initialize()
         {
-            if (inventoryPanel == null || pageIndex == -1)
+            // TODO: Add https://github.com/dbrizov/NaughtyAttributes to the project and use it for validation.
+            if (InventoryPanel == null || PageIndex == -1)
             {
                 Debug.LogError("Inventory panel or page index not set");
                 return;
@@ -39,21 +41,21 @@ namespace Core
         }
 
         /// <summary>
-        /// Refresh inventory UI
+        /// Refresh inventory UI.
         /// </summary>
         private void Refresh()
         {
-            foreach (Transform child in inventoryPanel.transform)
+            foreach (Transform child in InventoryPanel.transform)
             {
                 Destroy(child.gameObject);
             }
 
-            var items = inventoryManager.Items.GetRange(pageIndex * inventoryManager.PageLimit,
+            var items = inventoryManager.Items.GetRange(PageIndex * inventoryManager.PageLimit,
                 inventoryManager.PageLimit);
 
             foreach (var item in items)
             {
-                var itemSlot = Instantiate(itemSlotPrefab, inventoryPanel.transform);
+                var itemSlot = Instantiate(itemSlotPrefab, InventoryPanel.transform);
                 var itemSlotComponent = itemSlot.GetComponent<ItemSlot>();
                 if (itemSlotComponent == null)
                 {
@@ -75,13 +77,13 @@ namespace Core
         }
 
         /// <summary>
-        /// Called when item is added to inventory
+        /// Called when item is added to inventory.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="index">Index of the stack</param>
         private void OnItemAdded(IItem item, int index)
         {
-            var realIndex = index - pageIndex * inventoryManager.PageLimit;
+            var realIndex = index - PageIndex * inventoryManager.PageLimit;
             if (realIndex < 0 || realIndex >= ItemSlots.Count)
             {
                 return;
@@ -92,13 +94,13 @@ namespace Core
         }
 
         /// <summary>
-        /// Called when item is removed from inventory
+        /// Called when item is removed from inventory.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="index">Index of the stack</param>
         private void OnItemRemoved(IItem item, int index)
         {
-            var realIndex = index - pageIndex * inventoryManager.PageLimit;
+            var realIndex = index - PageIndex * inventoryManager.PageLimit;
             if (realIndex < 0 || realIndex >= ItemSlots.Count)
             {
                 return;

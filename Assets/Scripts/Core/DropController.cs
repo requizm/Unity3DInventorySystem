@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Core
 {
     /// <summary>
-    /// Checks if the item can be dropped
+    /// Drop interaction starts from here.
     /// </summary>
     public class DropController : MonoBehaviour, IBinder
     {

@@ -6,32 +6,29 @@ using UnityEngine;
 
 namespace Core
 {
-    /// <summary>
-    ///  Inventory manager
-    /// </summary>
     public class InventoryManager : IGameService
     {
         /// <summary>
-        ///   Called when item is added to inventory
+        /// Called when item is added to inventory.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="index">Index of the stack</param>
         public Action<IItem, int> OnItemAdded { get; set; }
 
         /// <summary>
-        ///   Called when item is removed from inventory
+        /// Called when item is removed from inventory.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="index">Index of the stack</param>
         public Action<IItem, int> OnItemRemoved { get; set; }
 
         /// <summary>
-        /// Current items in inventory
+        /// Current items in inventory.
         /// </summary>
         public List<List<IItem>> Items { get; set; }
 
         /// <summary>
-        ///  Count of items in inventory
+        /// Count of items in inventory.
         /// </summary>
         public int Count => Items.Count(i => i.Count > 0);
 
@@ -58,11 +55,10 @@ namespace Core
 
         public void Initialize()
         {
-            Debug.Log($"InventoryManager initialized");
         }
 
         /// <summary>
-        /// Add item to inventory
+        /// Add item to inventory.
         /// </summary>
         /// <param name="item"></param>
         public void AddItem(IItem item)
@@ -88,7 +84,7 @@ namespace Core
         }
 
         /// <summary>
-        ///  Remove item from inventory
+        /// Remove item from inventory.
         /// </summary>
         /// <param name="item"></param>
         public void RemoveItem(IItem item)

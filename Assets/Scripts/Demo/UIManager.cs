@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Core
 {
     /// <summary>
-    /// This is basically show/hide UI on Tab press.
+    /// Basically show/hide UI on Tab press.
     /// </summary>
     public class UIManager : MonoBehaviour, IGameService
     {

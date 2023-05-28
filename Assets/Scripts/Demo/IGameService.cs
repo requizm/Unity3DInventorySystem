@@ -1,7 +1,8 @@
 ﻿namespace Demo
 {
     /// <summary>
-    ///  IGameService is an interface for all game services.
+    ///  Similar to Singleton pattern, but it is not a singleton. <br/>
+    /// It is used to access game services.
     /// </summary>
     public interface IGameService
     {

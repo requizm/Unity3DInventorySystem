@@ -1,8 +1,7 @@
 ﻿namespace Demo
 {
     /// <summary>
-    /// IBinder is an interface for all binders. <br/>
-    /// If this is not a game service but it needs to be initialized, it should implement this interface.
+    /// If object is not a game service but it needs to be access services, it should implement this interface.
     /// </summary>
     public interface IBinder
     {

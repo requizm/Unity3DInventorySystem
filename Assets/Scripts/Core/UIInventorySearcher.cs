@@ -19,7 +19,7 @@ namespace Core
         }
 
         /// <summary>
-        /// Reset search input and item slots colors when inventory is closed
+        /// Reset search input and item slots colors when inventory is closed.
         /// </summary>
         /// <param name="isInventoryOpen"></param>
         private void OnInventoryToggle(bool isInventoryOpen)
@@ -31,7 +31,7 @@ namespace Core
         }
 
         /// <summary>
-        /// Search items by name or tag
+        /// Search items by name or tag.
         /// </summary>
         /// <param name="value"></param>
         private void OnValueChanged(string value)

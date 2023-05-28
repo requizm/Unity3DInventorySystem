@@ -7,8 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class is responsible for item slot in UI. It can be used for inventory, equipment, etc. <br/>
-/// It can be used both for single item and stackable items.
+/// Responsible for item slot in UI. It can be used for inventory, equipment, etc.
 /// </summary>
 public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpHandler
 {

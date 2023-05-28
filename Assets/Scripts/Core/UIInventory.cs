@@ -12,6 +12,7 @@ namespace Core
     /// </summary>
     public class UIInventory : MonoBehaviour, IGameService
     {
+        // TODO: Add https://github.com/dbrizov/NaughtyAttributes to the project and use it for validation.
         [Header("Prefabs")] [SerializeField] public GameObject pagesPanel;
         [SerializeField] public GameObject pageButtonsPanel;
         [SerializeField] public GameObject itemSlotPrefab;
@@ -78,8 +79,8 @@ namespace Core
                 var pageGameObject = Instantiate(contentPrefab, pagesPanel.transform);
                 pageGameObject.SetActive(false);
                 var pageComponent = pageGameObject.GetComponent<UIInventoryPage>();
-                pageComponent.inventoryPanel = pageGameObject;
-                pageComponent.pageIndex = i;
+                pageComponent.InventoryPanel = pageGameObject;
+                pageComponent.PageIndex = i;
                 pageComponent.Initialize();
                 UIInventoryPages.Add(pageComponent);
             }
