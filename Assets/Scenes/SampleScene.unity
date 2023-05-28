@@ -1679,8 +1679,9 @@ GameObject:
   - component: {fileID: 610912760}
   - component: {fileID: 610912761}
   - component: {fileID: 610912762}
+  - component: {fileID: 610912763}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1732,6 +1733,18 @@ MonoBehaviour:
   searchInput: {fileID: 1537728798}
   contentPrefab: {fileID: 471343568930039895, guid: 7856417d80531d94193616ea853796ee, type: 3}
   pageButtonPrefab: {fileID: 3712238446547804270, guid: 8c0013b6040acd446a466f4c93826757, type: 3}
+--- !u!114 &610912763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 610912758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d593a5ae857b4461ac4bdce6e7403ffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &611908805
 PrefabInstance:
   m_ObjectHideFlags: 0

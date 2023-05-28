@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    /// Manages the pages of the inventory. <br/>
+    /// When the game starts, it creates the pages and the page buttons.
+    /// </summary>
     public class UIInventory : MonoBehaviour, IGameService
     {
         [Header("Prefabs")] [SerializeField] public GameObject pagesPanel;
@@ -57,12 +61,10 @@ namespace Core
         }
 
         private InventoryManager inventoryManager;
-        private UIInventoryManager uiInventoryManager;
 
         public void Initialize()
         {
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
 
             var pageCount = inventoryManager.Limit / inventoryManager.PageLimit;
             for (var i = 0; i < pageCount; i++)
@@ -83,25 +85,6 @@ namespace Core
             }
 
             CurrentPageIndex = 0;
-        }
-
-        /// <summary>
-        /// Checks if the item can be dropped
-        /// </summary>
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Q) && uiInventoryManager.SelectedSlot != null &&
-                !uiInventoryManager.SelectedSlot.IsEmpty)
-            {
-                var item = uiInventoryManager.SelectedSlot.Items[^1] as Pickable;
-                if (item == null)
-                {
-                    Debug.LogError("Item is not pickable");
-                    return;
-                }
-
-                item.Drop();
-            }
         }
     }
 }
