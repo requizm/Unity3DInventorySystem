@@ -9,8 +9,8 @@ namespace Tests.EditMode
 {
     public class InventoryManagerTest
     {
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        [SetUp]
+        public void SetUp()
         {
             // Initialize default service locator.
             ServiceLocator.Initialize();
@@ -82,14 +82,24 @@ namespace Tests.EditMode
             Assert.AreEqual(0, inventoryManager.Count);
         }
 
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
-        /*[UnityTest]
-        public IEnumerator InventoryManagerTestWithEnumeratorPasses()
+        [Test]
+        public void StackTest()
         {
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
-            yield return null;
-        }*/
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+            var testItemAsset = new TestItemAsset(999, $"Asset999", new List<string>(), 2, null, null);
+            var item1 = new TestItem(999, testItemAsset);
+            var item2 = new TestItem(888, testItemAsset);
+            inventoryManager.AddItem(item1);
+            inventoryManager.AddItem(item2);
+            Assert.AreEqual(1, inventoryManager.Count);
+            Assert.AreEqual(2, inventoryManager.Items[0].Count);
+            Assert.AreEqual(999, inventoryManager.Items[0][0].Id);
+            Assert.AreEqual(888, inventoryManager.Items[0][1].Id);
+
+            inventoryManager.RemoveItem(item1);
+            Assert.AreEqual(1, inventoryManager.Count);
+            Assert.AreEqual(1, inventoryManager.Items[0].Count);
+            Assert.AreEqual(888, inventoryManager.Items[0][0].Id);
+        }
     }
 }

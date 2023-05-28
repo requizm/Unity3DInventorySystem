@@ -2,22 +2,19 @@ using System.Collections;
 using Core;
 using Demo;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Tests.PlayMode
 {
     public class PickableTest
     {
-        [OneTimeSetUp]
+        [SetUp]
         public void SetUp()
         {
             var playerGameObject = new GameObject("Player");
             var player = playerGameObject.AddComponent<Player>();
             player.transform.position = new Vector3(0, 0, 0);
-            // Set player.canvas via reflection.
             var canvas = new GameObject("Canvas");
             AssemblyUtils.SetField(player, "canvas", canvas);
 
