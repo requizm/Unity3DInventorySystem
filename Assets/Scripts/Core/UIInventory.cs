@@ -15,14 +15,14 @@ namespace Core
         [SerializeField] private GameObject contentPrefab;
         [SerializeField] private GameObject pageButtonPrefab;
 
-        public List<UIInventoryPage> UIInventoryPages { get; set; } = new List<UIInventoryPage>();
+        private List<UIInventoryPage> UIInventoryPages { get; } = new List<UIInventoryPage>();
 
         private UIInventoryPage currentPage;
 
         public UIInventoryPage CurrentPage
         {
             get => currentPage;
-            set
+            private set
             {
                 if (currentPage != null)
                 {
@@ -31,6 +31,23 @@ namespace Core
 
                 currentPage = value;
                 currentPage.gameObject.SetActive(true);
+            }
+        }
+
+        private int currentPageIndex = -1;
+
+        public int CurrentPageIndex
+        {
+            get => currentPageIndex;
+            set
+            {
+                if (currentPageIndex == value)
+                {
+                    return;
+                }
+
+                currentPageIndex = value;
+                CurrentPage = UIInventoryPages[currentPageIndex];
             }
         }
 
@@ -65,7 +82,7 @@ namespace Core
                 UIInventoryPages.Add(pageComponent);
             }
 
-            CurrentPage = UIInventoryPages[0];
+            CurrentPageIndex = 0;
         }
 
         /// <summary>

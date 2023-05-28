@@ -17,8 +17,19 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
     [SerializeField] private Button button;
     [SerializeField] private TextMeshProUGUI stackText;
 
+    /// <summary>
+    /// If there is no item in the slot, icon color will be this color.
+    /// </summary>
     private Color EmptyIconColor { get; set; }
+
+    /// <summary>
+    /// If search is not active or item is in the search result, icon color will be this color.
+    /// </summary>
     private Color FilledIconColor { get; set; }
+
+    /// <summary>
+    /// If search is active and item is not in the search result, icon color will be this color.
+    /// </summary>
     public Color NotFilledIconColor { get; private set; }
 
     public List<IItem> Items { get; private set; } = new List<IItem>();

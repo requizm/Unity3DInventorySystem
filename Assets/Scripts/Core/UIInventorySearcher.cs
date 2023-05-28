@@ -18,6 +18,10 @@ namespace Core
             uiManager.OnInventoryToggle += OnInventoryToggle;
         }
 
+        /// <summary>
+        /// Reset search input and item slots colors when inventory is closed
+        /// </summary>
+        /// <param name="isInventoryOpen"></param>
         private void OnInventoryToggle(bool isInventoryOpen)
         {
             if (isInventoryOpen) return;
@@ -26,6 +30,10 @@ namespace Core
             uiInventory.searchInput.text = string.Empty;
         }
 
+        /// <summary>
+        /// Search items by name or tag
+        /// </summary>
+        /// <param name="value"></param>
         private void OnValueChanged(string value)
         {
             if (string.IsNullOrEmpty(value))

@@ -4,21 +4,30 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    /// Single page of inventory
+    /// </summary>
     public class UIInventoryPage : MonoBehaviour
     {
         [HideInInspector] public GameObject inventoryPanel;
-        [HideInInspector] public int pageIndex;
+        [HideInInspector] public int pageIndex = -1;
 
         private GameObject itemSlotPrefab;
 
 
-        public List<ItemSlot> ItemSlots { get; set; } = new List<ItemSlot>();
+        public List<ItemSlot> ItemSlots { get; } = new List<ItemSlot>();
 
         private InventoryManager inventoryManager;
         private UIInventory uiInventory;
 
         public void Initialize()
         {
+            if (inventoryPanel == null || pageIndex == -1)
+            {
+                Debug.LogError("Inventory panel or page index not set");
+                return;
+            }
+
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
             uiInventory = ServiceLocator.Current.Get<UIInventory>();
 

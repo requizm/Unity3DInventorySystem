@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    /// Holds the selected ItemSlot. <br/>
+    /// Manage drag and drop of ItemSlots.
+    /// </summary>
     public class UIInventoryManager : IGameService
     {
         private ItemSlot selectedSlot;
@@ -151,7 +155,7 @@ namespace Core
                 toTransform.SetSiblingIndex(fromSiblingIndex);
             }
 
-            var pageIndex = uiInventory.CurrentPage.pageIndex;
+            var pageIndex = uiInventory.CurrentPageIndex;
             var fromItemIndex = pageIndex * inventoryManager.PageLimit + fromSiblingIndex;
             var toItemIndex = pageIndex * inventoryManager.PageLimit + toSiblingIndex;
 

@@ -36,10 +36,13 @@ namespace Core
         public int Count => Items.Count(i => i.Count > 0);
 
         /// <summary>
-        /// Limit of items in inventory. Default is 15.
+        /// Limit of items in per page. Default is 15.
         /// </summary>
         public int PageLimit { get; set; } = 15; // TODO: Make it dynamic
 
+        /// <summary>
+        /// Limit of items in inventory. Default is Limit * 2.
+        /// </summary>
         public int Limit => PageLimit * 2;
 
         public InventoryManager()

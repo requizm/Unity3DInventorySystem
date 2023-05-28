@@ -5,10 +5,13 @@ using UnityEngine.UI;
 
 namespace Core
 {
+    /// <summary>
+    /// Clicking on this button will change the current page of the inventory.
+    /// </summary>
     [RequireComponent(typeof(Button))]
     public class PageButton : MonoBehaviour
     {
-        [HideInInspector] public int pageIndex;
+        [HideInInspector] public int pageIndex = -1;
 
         private UIInventory uiInventory;
 
@@ -24,7 +27,12 @@ namespace Core
 
         public void OnClick()
         {
-            uiInventory.CurrentPage = uiInventory.UIInventoryPages[pageIndex];
+            if (pageIndex == -1)
+            {
+                Debug.LogError("Page index is not set");
+                return;
+            }
+            uiInventory.CurrentPageIndex = pageIndex;
         }
     }
 }
