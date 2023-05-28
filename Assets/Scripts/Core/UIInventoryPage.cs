@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Core
 {
     /// <summary>
-    /// Single page of inventory. <br/>
+    /// Single page of inventory. Manages slots of a page. <br/>
     /// When the page is created, it creates the empty item slots.
     /// </summary>
     public class UIInventoryPage : MonoBehaviour
