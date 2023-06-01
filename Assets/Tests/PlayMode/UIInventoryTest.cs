@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Core;
 using Demo;
@@ -5,6 +6,8 @@ using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace Tests.PlayMode
 {
@@ -240,6 +243,66 @@ namespace Tests.PlayMode
 
             Assert.AreEqual(oldItemOrder1, newItemOrder2);
             Assert.AreEqual(oldItemOrder2, newItemOrder1.Item1);
+        }
+
+        [UnityTest]
+        public IEnumerator SwapWithMergeTest()
+        {
+            yield return null;
+
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
+            var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+
+            var pickables = Object.FindObjectsOfType<Pickable>();
+            var stackLimit = pickables[0].ItemAsset.StackLimit;
+            if (stackLimit == 1)
+            {
+                throw new Exception("Stack limit is 1. It should be more than 1");
+            }
+            foreach (var pickable in pickables)
+            {
+                pickable.Pick();
+            }
+
+            var randomIndex1 = Random.Range(0, 15);
+            var randomIndex2 = Random.Range(0, 15);
+            while (randomIndex1 == randomIndex2)
+            {
+                randomIndex2 = Random.Range(0, 15);
+            }
+
+            var item1 = inventoryManager.Items[randomIndex1][0];
+            var oldItemOrder1 = randomIndex1;
+            var item1Slot = uiInventory.GetItemSlot(item1);
+            
+
+
+            var item2 = inventoryManager.Items[randomIndex2][0];
+            var oldItemOrder2 = randomIndex2;
+            var item2Slot = uiInventory.GetItemSlot(item2);
+            ((Pickable)item2).Drop();
+            
+            uiInventoryManager.SwapTwoItems(item1Slot, item2Slot);
+            yield return null;
+            
+            var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
+            var newSlotOrder2 = item2Slot.transform.GetSiblingIndex();
+            
+            Assert.AreEqual(oldItemOrder1, newSlotOrder1);
+            Assert.AreEqual(oldItemOrder2, newSlotOrder2);
+            
+            var newItemOrder1 = inventoryManager.GetItemIndex(item1);
+            var newItemOrder2 = randomIndex2;
+            
+            Assert.AreEqual(oldItemOrder1, newItemOrder1.Item1);
+            Assert.AreEqual(oldItemOrder2, newItemOrder2);
+            
+            Assert.AreEqual(stackLimit - 1, item1Slot.Items.Count);
+            Assert.AreEqual(stackLimit - 1, inventoryManager.Items[newItemOrder1.Item1].Count);
+            
+            Assert.AreEqual(stackLimit, item2Slot.Items.Count);
+            Assert.AreEqual(stackLimit, inventoryManager.Items[newItemOrder2].Count);
         }
     }
 }
