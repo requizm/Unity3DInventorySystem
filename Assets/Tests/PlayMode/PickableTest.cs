@@ -37,6 +37,18 @@ namespace Tests.PlayMode
 
             ServiceLocator.Current.InitializeServices();
         }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            ServiceLocator.Current.Cleanup();
+            
+            var pickables = Object.FindObjectsOfType<Pickable>();
+            foreach (var pickable in pickables)
+            {
+                Object.DestroyImmediate(pickable.gameObject);
+            }
+        }
 
         [UnityTest]
         public IEnumerator PickAndDropTest()

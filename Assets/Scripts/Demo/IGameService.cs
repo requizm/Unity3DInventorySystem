@@ -10,5 +10,6 @@
         ///  Initialize the service. This is called from Bootstrapper.
         /// </summary>
         public void Initialize();
+        public void Cleanup() {}
     }
 }

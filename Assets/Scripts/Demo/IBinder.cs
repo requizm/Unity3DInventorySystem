@@ -9,5 +9,6 @@
         /// After all services are initialized, this method is called.
         /// </summary>
         public void Initialize();
+        public void Cleanup() {}
     }
 }

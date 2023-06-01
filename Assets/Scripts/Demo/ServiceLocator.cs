@@ -83,6 +83,25 @@ namespace Demo
                 binder.Initialize();
             }
         }
+        
+        public void Cleanup()
+        {
+            foreach (var service in services.Values)
+            {
+                service.Cleanup();
+                if (service is MonoBehaviour behaviour)
+                {
+                    Object.DestroyImmediate(behaviour);
+                }
+            }
+            
+            foreach (var binder in Object.FindObjectsOfType<MonoBehaviour>().OfType<IBinder>())
+            {
+                binder.Cleanup();
+            }
+            
+            services.Clear();
+        }
 
         /// <summary>
         /// Unregisters the service from the current service locator.

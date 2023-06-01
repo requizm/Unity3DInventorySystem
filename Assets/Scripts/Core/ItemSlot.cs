@@ -42,11 +42,6 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
     }
 
-    private void Awake()
-    {
-        Initialize();
-    }
-
     /// <summary>
     /// Updates item slot
     /// </summary>

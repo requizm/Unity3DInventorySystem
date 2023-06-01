@@ -13,12 +13,6 @@ namespace Core
 
         public Action<bool> OnInventoryToggle;
 
-        private void Awake()
-        {
-            canvas.SetActive(false);
-            Cursor.visible = false;
-        }
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
@@ -39,6 +33,8 @@ namespace Core
 
         public void Initialize()
         {
+            canvas.SetActive(false);
+            Cursor.visible = false;
         }
     }
 }

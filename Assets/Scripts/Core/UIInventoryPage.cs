@@ -62,6 +62,7 @@ namespace Core
                     Debug.LogError("ItemSlot component not found");
                     continue;
                 }
+                itemSlotComponent.Initialize();
 
                 if (item.Count > 0)
                 {
