@@ -102,5 +102,23 @@ namespace Core
 
             Debug.Log($"{item.ItemAsset.AssetName}:{item.Id} removed");
         }
+        
+        public Tuple<int, int> GetItemIndex(IItem item)
+        {
+            var stackIndex = Items.FindIndex(i => i.Contains(item));
+            if (stackIndex == -1)
+            {
+                Debug.LogError($"Item {item.ItemAsset.AssetName}:{item.Id} not found");
+                return null;
+            }
+
+            var itemIndex = Items[stackIndex].FindIndex(i => i == item);
+            return new Tuple<int, int>(stackIndex, itemIndex);
+        }
+        
+        public int GetEmptySlot()
+        {
+            return Items.FindIndex(i => i.Count == 0);
+        }
     }
 }

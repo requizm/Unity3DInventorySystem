@@ -87,5 +87,10 @@ namespace Core
 
             CurrentPageIndex = 0;
         }
+        
+        public ItemSlot GetItemSlot(IItem item)
+        {
+            return ItemSlots.FirstOrDefault(x => x.Items.Any(y => y == item));
+        }
     }
 }
