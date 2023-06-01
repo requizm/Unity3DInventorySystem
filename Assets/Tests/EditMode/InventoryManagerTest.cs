@@ -18,6 +18,12 @@ namespace Tests.EditMode
             // Register all your services next.
             ServiceLocator.Current.Register(new InventoryManager());
         }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            ServiceLocator.Current.Cleanup();
+        }
 
         /// <summary>
         /// Checks if AddItem and RemoveItem works correctly
@@ -43,8 +49,11 @@ namespace Tests.EditMode
             Assert.AreEqual(0, inventoryManager.Count);
         }
 
+        /// <summary>
+        /// Adds items to inventory until it is full and checks if it is full.
+        /// </summary>
         [Test]
-        public void FullInventoryTest()
+        public void FullInventoryFailTest()
         {
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
             var items = new List<IItem>();
@@ -70,8 +79,11 @@ namespace Tests.EditMode
             Assert.AreEqual(inventoryManager.Limit, inventoryManager.Items.Count);
         }
 
+        /// <summary>
+        /// Checks if RemoveItem works correctly when inventory is empty
+        /// </summary>
         [Test]
-        public void EmptyInventoryTest()
+        public void EmptyInventoryFailTest()
         {
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
             Assert.AreEqual(0, inventoryManager.Count);
@@ -82,6 +94,9 @@ namespace Tests.EditMode
             Assert.AreEqual(0, inventoryManager.Count);
         }
 
+        /// <summary>
+        /// Tries to add items with same type and checks stack count.
+        /// </summary>
         [Test]
         public void StackTest()
         {

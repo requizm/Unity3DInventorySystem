@@ -70,6 +70,10 @@ namespace Tests.PlayMode
             }
         }
 
+        /// <summary>
+        ///  Test if all slots are empty.
+        /// </summary>
+        /// <returns></returns>
         [UnityTest]
         public IEnumerator EmptySlotTest()
         {
@@ -90,6 +94,10 @@ namespace Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// Pick all items and check if they are in the inventory and UI.
+        /// </summary>
+        /// <returns></returns>
         [UnityTest]
         public IEnumerator PickTest()
         {
@@ -117,6 +125,10 @@ namespace Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// Pick all items. Then drop all items and check if all slots are empty.
+        /// </summary>
+        /// <returns></returns>
         [UnityTest]
         public IEnumerator DropTest()
         {
@@ -146,6 +158,10 @@ namespace Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// Tries to swap two items in the inventory.
+        /// </summary>
+        /// <returns></returns>
         [UnityTest]
         public IEnumerator SwapNotNullTest()
         {
@@ -189,11 +205,14 @@ namespace Tests.PlayMode
 
             var newItemOrder1 = inventoryManager.GetItemIndex(item1);
             var newItemOrder2 = inventoryManager.GetItemIndex(item2);
-
             Assert.AreEqual(oldItemOrder1, newItemOrder2.Item1);
             Assert.AreEqual(oldItemOrder2, newItemOrder1.Item1);
         }
 
+        /// <summary>
+        /// Tries to swap two slots in the inventory. But second slot is empty.
+        /// </summary>
+        /// <returns></returns>
         [UnityTest]
         public IEnumerator SwapNullTest()
         {
@@ -245,6 +264,11 @@ namespace Tests.PlayMode
             Assert.AreEqual(oldItemOrder2, newItemOrder1.Item1);
         }
 
+        /// <summary>
+        /// Tries to swap-merge two items in the inventory.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         [UnityTest]
         public IEnumerator SwapWithMergeTest()
         {
@@ -254,17 +278,20 @@ namespace Tests.PlayMode
             var uiInventory = ServiceLocator.Current.Get<UIInventory>();
             var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
 
+            // Pick items
             var pickables = Object.FindObjectsOfType<Pickable>();
             var stackLimit = pickables[0].ItemAsset.StackLimit;
             if (stackLimit == 1)
             {
                 throw new Exception("Stack limit is 1. It should be more than 1");
             }
+
             foreach (var pickable in pickables)
             {
                 pickable.Pick();
             }
 
+            // Select random two slots and drop one item from the second slot.
             var randomIndex1 = Random.Range(0, 15);
             var randomIndex2 = Random.Range(0, 15);
             while (randomIndex1 == randomIndex2)
@@ -275,32 +302,34 @@ namespace Tests.PlayMode
             var item1 = inventoryManager.Items[randomIndex1][0];
             var oldItemOrder1 = randomIndex1;
             var item1Slot = uiInventory.GetItemSlot(item1);
-            
 
 
             var item2 = inventoryManager.Items[randomIndex2][0];
             var oldItemOrder2 = randomIndex2;
             var item2Slot = uiInventory.GetItemSlot(item2);
             ((Pickable)item2).Drop();
-            
+
+            // Swap two slots.
             uiInventoryManager.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
-            
+
+            // Sibling index should be the same because items are merged. Not swapped.
             var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
             var newSlotOrder2 = item2Slot.transform.GetSiblingIndex();
-            
             Assert.AreEqual(oldItemOrder1, newSlotOrder1);
             Assert.AreEqual(oldItemOrder2, newSlotOrder2);
-            
+
+            // Item order should be the same because items are merged. Not swapped.
             var newItemOrder1 = inventoryManager.GetItemIndex(item1);
             var newItemOrder2 = randomIndex2;
-            
             Assert.AreEqual(oldItemOrder1, newItemOrder1.Item1);
             Assert.AreEqual(oldItemOrder2, newItemOrder2);
-            
+
+            // Count of first item should be decreased by 1.
             Assert.AreEqual(stackLimit - 1, item1Slot.Items.Count);
             Assert.AreEqual(stackLimit - 1, inventoryManager.Items[newItemOrder1.Item1].Count);
-            
+
+            // Count of second item should be increased by 1.
             Assert.AreEqual(stackLimit, item2Slot.Items.Count);
             Assert.AreEqual(stackLimit, inventoryManager.Items[newItemOrder2].Count);
         }
