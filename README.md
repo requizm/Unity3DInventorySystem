@@ -1,0 +1,1 @@
+![](images/managers-diagram.png)
