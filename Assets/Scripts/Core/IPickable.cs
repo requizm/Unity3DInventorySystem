@@ -1,20 +1,23 @@
-/// <summary>
-///  Base type for all pickable items.
-/// </summary>
-public interface IPickable
+namespace Core
 {
     /// <summary>
-    /// Picked or not.
+    ///  Base type for all pickable items.
     /// </summary>
-    public bool IsPicked { get; set; }
+    public interface IPickable
+    {
+        /// <summary>
+        /// Picked or not.
+        /// </summary>
+        public bool IsPicked { get; set; }
 
-    /// <summary>
-    /// Called when the player wants to pick up the item.
-    /// </summary>
-    public void Pick();
+        /// <summary>
+        /// Called when the player wants to pick up the item.
+        /// </summary>
+        public void Pick();
 
-    /// <summary>
-    /// Called when the player wants to drop the item.
-    /// </summary>
-    public void Drop();
+        /// <summary>
+        /// Called when the player wants to drop the item.
+        /// </summary>
+        public void Drop();
+    }
 }

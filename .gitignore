@@ -606,6 +606,9 @@ sysinfo.txt
 
 # DocProject is a documentation generator add-in
 
+# Docfx output
+docfx_project/
+
 # Click-Once directory
 
 # Publish Web Output
