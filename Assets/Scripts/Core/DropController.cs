@@ -8,19 +8,19 @@ namespace Core
     /// </summary>
     public class DropController : MonoBehaviour, IBinder
     {
-        private UIInventoryManager uiInventoryManager;
+        private UIInventoryInteractor uiInventoryInteractor;
 
         public void Initialize()
         {
-            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q) && uiInventoryManager.SelectedSlot != null &&
-                !uiInventoryManager.SelectedSlot.IsEmpty)
+            if (Input.GetKeyDown(KeyCode.Q) && uiInventoryInteractor.SelectedSlot != null &&
+                !uiInventoryInteractor.SelectedSlot.IsEmpty)
             {
-                var item = uiInventoryManager.SelectedSlot.Items[^1] as IPickable;
+                var item = uiInventoryInteractor.SelectedSlot.Items[^1] as IPickable;
                 if (item == null)
                 {
                     Debug.LogError("Item is not pickable");

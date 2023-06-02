@@ -6,13 +6,13 @@ namespace Core
 {
     public class UIInventorySearcher : IGameService
     {
-        private UIInventory uiInventory;
+        private UIInventoryManager uiInventoryManager;
         private UIManager uiManager;
 
         public void Initialize()
         {
-            uiInventory = ServiceLocator.Current.Get<UIInventory>();
-            uiInventory.searchInput.onValueChanged.AddListener(OnValueChanged);
+            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            uiInventoryManager.searchInput.onValueChanged.AddListener(OnValueChanged);
             uiManager = ServiceLocator.Current.Get<UIManager>();
 
             uiManager.OnInventoryToggle += OnInventoryToggle;
@@ -26,8 +26,8 @@ namespace Core
         {
             if (isInventoryOpen) return;
 
-            uiInventory.ItemSlots.ForEach(itemSlot => itemSlot.ResetColor());
-            uiInventory.searchInput.text = string.Empty;
+            uiInventoryManager.ItemSlots.ForEach(itemSlot => itemSlot.ResetColor());
+            uiInventoryManager.searchInput.text = string.Empty;
         }
 
         /// <summary>
@@ -38,12 +38,12 @@ namespace Core
         {
             if (string.IsNullOrEmpty(value))
             {
-                uiInventory.ItemSlots.ForEach(itemSlot => itemSlot.ResetColor());
+                uiInventoryManager.ItemSlots.ForEach(itemSlot => itemSlot.ResetColor());
                 return;
             }
 
             var foundedItemSlots = new List<ItemSlot>();
-            foreach (var itemSlot in uiInventory.ItemSlots)
+            foreach (var itemSlot in uiInventoryManager.ItemSlots)
             {
                 if (itemSlot.IsEmpty)
                 {
@@ -64,7 +64,7 @@ namespace Core
                 }
             }
 
-            uiInventory.ItemSlots.ForEach(itemSlot =>
+            uiInventoryManager.ItemSlots.ForEach(itemSlot =>
             {
                 if (foundedItemSlots.Contains(itemSlot))
                 {

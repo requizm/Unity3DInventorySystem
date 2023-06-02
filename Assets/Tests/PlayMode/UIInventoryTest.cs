@@ -26,11 +26,11 @@ namespace Tests.PlayMode
             var managerPrefab = Resources.Load<GameObject>("Test/Prefabs/Manager");
             var managerGameObject = Object.Instantiate(managerPrefab);
             var uiManager = managerGameObject.GetComponent<UIManager>();
-            var uiInventory = managerGameObject.GetComponent<UIInventory>();
+            var uiInventoryManager = managerGameObject.GetComponent<UIInventoryManager>();
 
-            uiInventory.pagesPanel = pagesPanel;
-            uiInventory.pageButtonsPanel = pageButtonsPanel;
-            uiInventory.searchInput = searchInput;
+            uiInventoryManager.pagesPanel = pagesPanel;
+            uiInventoryManager.pageButtonsPanel = pageButtonsPanel;
+            uiInventoryManager.searchInput = searchInput;
 
             var playerPrefab = Resources.Load<GameObject>("Test/Prefabs/Player");
             var playerGameObject = Object.Instantiate(playerPrefab);
@@ -50,8 +50,8 @@ namespace Tests.PlayMode
             // Register all your services next.
             ServiceLocator.Current.Register(new InventoryManager());
             ServiceLocator.Current.Register(Object.FindObjectOfType<Player>());
-            ServiceLocator.Current.Register(new UIInventoryManager());
-            ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventory>());
+            ServiceLocator.Current.Register(new UIInventoryInteractor());
+            ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventoryManager>());
             ServiceLocator.Current.Register(Object.FindObjectOfType<UIManager>());
             ServiceLocator.Current.Register(new UIInventorySearcher());
 
@@ -80,10 +80,10 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
+            var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
 
             var items = inventoryManager.Items;
-            var itemSlots = uiInventory.ItemSlots;
+            var itemSlots = uiInventoryManager.ItemSlots;
             Assert.AreEqual((inventoryManager.Limit / inventoryManager.PageLimit) * inventoryManager.PageLimit,
                 itemSlots.Count);
 
@@ -104,7 +104,7 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
+            var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
 
             var pickables = Object.FindObjectsOfType<Pickable>();
             foreach (var pickable in pickables)
@@ -113,7 +113,7 @@ namespace Tests.PlayMode
             }
 
             var items = inventoryManager.Items;
-            var itemSlots = uiInventory.ItemSlots;
+            var itemSlots = uiInventoryManager.ItemSlots;
 
             for (var i = 0; i < itemSlots.Count; i++)
             {
@@ -135,7 +135,7 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
+            var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
 
             var pickables = Object.FindObjectsOfType<Pickable>();
             foreach (var pickable in pickables)
@@ -149,7 +149,7 @@ namespace Tests.PlayMode
             }
 
             var items = inventoryManager.Items;
-            var itemSlots = uiInventory.ItemSlots;
+            var itemSlots = uiInventoryManager.ItemSlots;
 
             for (var i = 0; i < itemSlots.Count; i++)
             {
@@ -168,8 +168,8 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
             var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            var uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
 
             var pickables = Object.FindObjectsOfType<Pickable>();
             foreach (var pickable in pickables)
@@ -189,13 +189,13 @@ namespace Tests.PlayMode
             var oldItemOrder1 = randomIndex1;
             var oldItemOrder2 = randomIndex2;
 
-            var item1Slot = uiInventory.GetItemSlot(item1);
-            var item2Slot = uiInventory.GetItemSlot(item2);
+            var item1Slot = uiInventoryManager.GetItemSlot(item1);
+            var item2Slot = uiInventoryManager.GetItemSlot(item2);
             var oldSlotOrder1 = item1Slot.transform.GetSiblingIndex();
             var oldSlotOrder2 = item2Slot.transform.GetSiblingIndex();
 
 
-            uiInventoryManager.SwapTwoItems(item1Slot, item2Slot);
+            uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
             var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
@@ -219,8 +219,8 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
             var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            var uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
 
             var pickables = Object.FindObjectsOfType<Pickable>();
             var stackLimit = pickables[0].ItemAsset.StackLimit;
@@ -243,13 +243,13 @@ namespace Tests.PlayMode
             var oldItemOrder1 = randomIndex1;
             var oldItemOrder2 = randomIndex2;
 
-            var item1Slot = uiInventory.GetItemSlot(item1);
-            var item2Slot = uiInventory.ItemSlots[randomIndex2];
+            var item1Slot = uiInventoryManager.GetItemSlot(item1);
+            var item2Slot = uiInventoryManager.ItemSlots[randomIndex2];
             var oldSlotOrder1 = item1Slot.transform.GetSiblingIndex();
             var oldSlotOrder2 = item2Slot.transform.GetSiblingIndex();
 
 
-            uiInventoryManager.SwapTwoItems(item1Slot, item2Slot);
+            uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
             var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
@@ -275,8 +275,8 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
             var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            var uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
 
             // Pick items
             var pickables = Object.FindObjectsOfType<Pickable>();
@@ -301,16 +301,16 @@ namespace Tests.PlayMode
 
             var item1 = inventoryManager.Items[randomIndex1][0];
             var oldItemOrder1 = randomIndex1;
-            var item1Slot = uiInventory.GetItemSlot(item1);
+            var item1Slot = uiInventoryManager.GetItemSlot(item1);
 
 
             var item2 = inventoryManager.Items[randomIndex2][0];
             var oldItemOrder2 = randomIndex2;
-            var item2Slot = uiInventory.GetItemSlot(item2);
+            var item2Slot = uiInventoryManager.GetItemSlot(item2);
             ((Pickable)item2).Drop();
 
             // Swap two slots.
-            uiInventoryManager.SwapTwoItems(item1Slot, item2Slot);
+            uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
             // Sibling index should be the same because items are merged. Not swapped.
@@ -345,8 +345,8 @@ namespace Tests.PlayMode
             yield return null;
 
             var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            var uiInventory = ServiceLocator.Current.Get<UIInventory>();
             var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            var uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
 
             // Pick items
             var pickables = Object.FindObjectsOfType<Pickable>();
@@ -371,20 +371,20 @@ namespace Tests.PlayMode
 
             var item1 = inventoryManager.Items[randomIndex1][0];
             var oldItemOrder1 = randomIndex1;
-            var item1Slot = uiInventory.GetItemSlot(item1);
+            var item1Slot = uiInventoryManager.GetItemSlot(item1);
             ((Pickable)item1).Drop();
 
 
             var item2 = inventoryManager.Items[randomIndex2][0];
             var oldItemOrder2 = randomIndex2;
-            var item2Slot = uiInventory.GetItemSlot(item2);
+            var item2Slot = uiInventoryManager.GetItemSlot(item2);
             for (int i = 0; i < stackLimit - 1; i++)
             {
                 ((Pickable)inventoryManager.Items[randomIndex2][i]).Drop();
             }
 
             // Swap two slots.
-            uiInventoryManager.SwapTwoItems(item1Slot, item2Slot);
+            uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
             // Sibling index should be the same because items are merged. But first item is empty.

@@ -19,7 +19,7 @@ namespace Core
         public List<ItemSlot> ItemSlots { get; } = new List<ItemSlot>();
 
         private InventoryManager inventoryManager;
-        private UIInventory uiInventory;
+        private UIInventoryManager uiInventoryManager;
 
         public void Initialize()
         {
@@ -31,9 +31,9 @@ namespace Core
             }
 
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            uiInventory = ServiceLocator.Current.Get<UIInventory>();
+            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
 
-            itemSlotPrefab = uiInventory.itemSlotPrefab;
+            itemSlotPrefab = uiInventoryManager.itemSlotPrefab;
 
             Refresh();
             inventoryManager.OnItemAdded += OnItemAdded;

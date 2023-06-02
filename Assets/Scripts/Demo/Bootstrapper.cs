@@ -26,8 +26,8 @@ namespace Demo
             // Register all your services next.
             ServiceLocator.Current.Register(new InventoryManager());
             ServiceLocator.Current.Register(Object.FindObjectOfType<Player>());
-            ServiceLocator.Current.Register(new UIInventoryManager());
-            ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventory>());
+            ServiceLocator.Current.Register(new UIInventoryInteractor());
+            ServiceLocator.Current.Register(Object.FindObjectOfType<UIInventoryManager>());
             ServiceLocator.Current.Register(Object.FindObjectOfType<UIManager>());
             ServiceLocator.Current.Register(new UIInventorySearcher());
 

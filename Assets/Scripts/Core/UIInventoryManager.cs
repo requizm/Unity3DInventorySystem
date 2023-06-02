@@ -1,175 +1,96 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Demo;
+using TMPro;
 using UnityEngine;
 
 namespace Core
 {
     /// <summary>
-    /// Holds the selected ItemSlot. <br/>
-    /// Manage drag and drop of ItemSlots.
+    /// Manages the pages of the inventory. <br/>
+    /// When the game starts, it creates the pages and the page buttons.
     /// </summary>
-    public class UIInventoryManager : IGameService
+    public class UIInventoryManager : MonoBehaviour, IGameService
     {
-        private ItemSlot selectedSlot;
+        // TODO: Add https://github.com/dbrizov/NaughtyAttributes to the project and use it for validation.
+        [Header("Prefabs")] [SerializeField] public GameObject pagesPanel;
+        [SerializeField] public GameObject pageButtonsPanel;
+        [SerializeField] public GameObject itemSlotPrefab;
+        [SerializeField] public TMP_InputField searchInput;
+        [SerializeField] private GameObject contentPrefab;
+        [SerializeField] private GameObject pageButtonPrefab;
 
-        public ItemSlot SelectedSlot
+        private List<UIInventoryPage> UIInventoryPages { get; } = new List<UIInventoryPage>();
+
+        private UIInventoryPage currentPage;
+
+        public UIInventoryPage CurrentPage
         {
-            get => selectedSlot;
-            set
+            get => currentPage;
+            private set
             {
-                if (selectedSlot != null)
+                if (currentPage != null)
                 {
-                    selectedSlot.OnDeselect();
+                    currentPage.gameObject.SetActive(false);
                 }
 
-                selectedSlot = value;
-
-                if (selectedSlot != null)
-                {
-                    selectedSlot.OnSelect();
-                }
+                currentPage = value;
+                currentPage.gameObject.SetActive(true);
             }
         }
 
-        private ItemSlot dragStartItemSlot, dragEndItemSlot;
+        private int currentPageIndex = -1;
 
-        public ItemSlot DragStartItemSlot
+        public int CurrentPageIndex
         {
-            get { return dragStartItemSlot; }
+            get => currentPageIndex;
             set
             {
-                if (dragStartItemSlot != null)
+                if (currentPageIndex == value)
                 {
-                    dragStartItemSlot.OnDragEnd(false);
+                    return;
                 }
 
-                dragStartItemSlot = value;
-
-                if (dragStartItemSlot != null)
-                {
-                    dragStartItemSlot.OnDragStart();
-                }
-
-                dragEndItemSlot = null;
+                currentPageIndex = value;
+                CurrentPage = UIInventoryPages[currentPageIndex];
             }
         }
 
-        public ItemSlot DragEndItemSlot
+        public List<ItemSlot> ItemSlots
         {
-            get { return dragEndItemSlot; }
-            set
-            {
-                if (dragEndItemSlot != null)
-                {
-                    dragEndItemSlot.OnDragEnd(false);
-                }
-
-                dragEndItemSlot = value;
-
-                if (dragEndItemSlot != null)
-                {
-                    dragEndItemSlot.OnDragEnd(true);
-                }
-
-                dragStartItemSlot = null;
-            }
+            get { return UIInventoryPages.SelectMany(x => x.ItemSlots).ToList(); }
         }
 
         private InventoryManager inventoryManager;
-        private UIInventory uiInventory;
 
         public void Initialize()
         {
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            uiInventory = ServiceLocator.Current.Get<UIInventory>();
+
+            var pageCount = inventoryManager.Limit / inventoryManager.PageLimit;
+            for (var i = 0; i < pageCount; i++)
+            {
+                var pageButtonGameObject = Instantiate(pageButtonPrefab, pageButtonsPanel.transform);
+                var pageButtonComponent = pageButtonGameObject.GetComponent<PageButton>();
+                pageButtonComponent.pageIndex = i;
+                pageButtonComponent.SetName((i + 1).ToString());
+
+
+                var pageGameObject = Instantiate(contentPrefab, pagesPanel.transform);
+                pageGameObject.SetActive(false);
+                var pageComponent = pageGameObject.GetComponent<UIInventoryPage>();
+                pageComponent.InventoryPanel = pageGameObject;
+                pageComponent.PageIndex = i;
+                pageComponent.Initialize();
+                UIInventoryPages.Add(pageComponent);
+            }
+
+            CurrentPageIndex = 0;
         }
-
-        /// <summary>
-        /// Swaps two items. If the items are of same type, they will be merged.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        public void SwapTwoItems(ItemSlot from, ItemSlot to)
+        
+        public ItemSlot GetItemSlot(IItem item)
         {
-            if (from == null || to == null)
-            {
-                Debug.LogError("ItemSlot is null");
-                return;
-            }
-
-            if (from == to)
-            {
-                Debug.LogError("Both ItemSlot is same");
-                return;
-            }
-
-            if (from.IsEmpty)
-            {
-                Debug.LogError("ItemSlot1 is empty");
-                return;
-            }
-
-            var swapNeeded = true;
-            if (!to.IsEmpty)
-            {
-                if (from.Items.GetType() == to.Items.GetType())
-                {
-                    var fromList = from.Items;
-                    var toList = to.Items;
-
-                    var fromCount = fromList.Count;
-                    var toCount = toList.Count;
-
-                    var fromStackLimit = from.Items[0].ItemAsset.StackLimit;
-                    var toStackLimit = to.Items[0].ItemAsset.StackLimit;
-
-                    if (fromCount + toCount <= fromStackLimit)
-                    {
-                        var items = new List<IItem>();
-                        items.AddRange(fromList);
-                        items.AddRange(toList);
-                        to.SetItem(items);
-                        from.Clear();
-                        swapNeeded = false;
-                    }
-                    else if (toCount < toStackLimit)
-                    {
-                        var items = new List<IItem>();
-                        items.AddRange(toList);
-                        var count = toStackLimit - toCount;
-                        items.AddRange(fromList.GetRange(fromCount - count, count));
-                        to.SetItem(items);
-                        from.Decrease(count);
-                        swapNeeded = false;
-                    }
-                }
-            }
-
-            var fromTransform = from.transform;
-            var toTransform = to.transform;
-            var fromSiblingIndex = fromTransform.GetSiblingIndex();
-            var toSiblingIndex = toTransform.GetSiblingIndex();
-            if (swapNeeded)
-            {
-                fromTransform.SetSiblingIndex(toSiblingIndex);
-                toTransform.SetSiblingIndex(fromSiblingIndex);
-            }
-
-            var pageIndex = uiInventory.CurrentPageIndex;
-            var fromItemIndex = pageIndex * inventoryManager.PageLimit + fromSiblingIndex;
-            var toItemIndex = pageIndex * inventoryManager.PageLimit + toSiblingIndex;
-
-            var fromItemsCopy = new List<IItem>(from.Items);
-            var toItemsCopy = new List<IItem>(to.Items);
-
-            // Change backend order
-            inventoryManager.Items[fromItemIndex] = swapNeeded ? toItemsCopy : fromItemsCopy;
-            inventoryManager.Items[toItemIndex] = swapNeeded ? fromItemsCopy : toItemsCopy;
-
-            if (SelectedSlot != null && SelectedSlot.IsEmpty)
-            {
-                SelectedSlot = null;
-            }
+            return ItemSlots.FirstOrDefault(x => x.Items.Any(y => y == item));
         }
     }
 }

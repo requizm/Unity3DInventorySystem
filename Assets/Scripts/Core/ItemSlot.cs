@@ -35,11 +35,11 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
 
     public bool IsEmpty => Items.Count == 0;
 
-    private UIInventoryManager uiInventoryManager;
+    private UIInventoryInteractor uiInventoryInteractor;
 
     public void Initialize()
     {
-        uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+        uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         if (Items.Count == 0)
         {
             Clear();
-            uiInventoryManager.SelectedSlot = null;
+            uiInventoryInteractor.SelectedSlot = null;
         }
     }
 
@@ -113,7 +113,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         if (number == Items.Count)
         {
             Clear();
-            uiInventoryManager.SelectedSlot = null;
+            uiInventoryInteractor.SelectedSlot = null;
             return;
         }
 
@@ -123,13 +123,13 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
 
     public void OnClick()
     {
-        if (this == uiInventoryManager.SelectedSlot || IsEmpty)
+        if (this == uiInventoryInteractor.SelectedSlot || IsEmpty)
         {
-            uiInventoryManager.SelectedSlot = null;
+            uiInventoryInteractor.SelectedSlot = null;
         }
         else
         {
-            uiInventoryManager.SelectedSlot = this;
+            uiInventoryInteractor.SelectedSlot = this;
         }
     }
 
@@ -159,7 +159,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
         }
 
         isDragging = true;
-        uiInventoryManager.DragStartItemSlot = this;
+        uiInventoryInteractor.DragStartItemSlot = this;
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -179,7 +179,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
             var itemSlot = result.gameObject.GetComponent<ItemSlot>();
             if (itemSlot != null)
             {
-                uiInventoryManager.DragEndItemSlot = itemSlot;
+                uiInventoryInteractor.DragEndItemSlot = itemSlot;
                 found = true;
                 break;
             }
@@ -187,7 +187,7 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
 
         if (!found)
         {
-            uiInventoryManager.DragStartItemSlot = null;
+            uiInventoryInteractor.DragStartItemSlot = null;
         }
 
         isDragging = false;
@@ -199,9 +199,9 @@ public class ItemSlot : MonoBehaviour, IBinder, IPointerDownHandler, IPointerUpH
 
     public void OnDragEnd(bool success)
     {
-        if (success && uiInventoryManager.DragStartItemSlot != uiInventoryManager.DragEndItemSlot)
+        if (success && uiInventoryInteractor.DragStartItemSlot != uiInventoryInteractor.DragEndItemSlot)
         {
-            uiInventoryManager.SwapTwoItems(uiInventoryManager.DragStartItemSlot, uiInventoryManager.DragEndItemSlot);
+            uiInventoryInteractor.SwapTwoItems(uiInventoryInteractor.DragStartItemSlot, uiInventoryInteractor.DragEndItemSlot);
             return;
         }
     }

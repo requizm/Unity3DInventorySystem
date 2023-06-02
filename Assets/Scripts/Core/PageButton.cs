@@ -13,11 +13,11 @@ namespace Core
     {
         [HideInInspector] public int pageIndex = -1;
 
-        private UIInventory uiInventory;
+        private UIInventoryManager uiInventoryManager;
 
         private void Awake()
         {
-            uiInventory = ServiceLocator.Current.Get<UIInventory>();
+            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
         }
 
         public void SetName(string name)
@@ -32,7 +32,7 @@ namespace Core
                 Debug.LogError("Page index is not set");
                 return;
             }
-            uiInventory.CurrentPageIndex = pageIndex;
+            uiInventoryManager.CurrentPageIndex = pageIndex;
         }
     }
 }
