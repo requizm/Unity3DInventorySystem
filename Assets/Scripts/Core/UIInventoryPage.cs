@@ -13,13 +13,12 @@ namespace Core
         public GameObject InventoryPanel { get; set; }
         public int PageIndex { get; set; } = -1;
 
-        private GameObject itemSlotPrefab;
+        [HideInInspector] public GameObject itemSlotPrefab;
 
 
         public List<ItemSlot> ItemSlots { get; } = new List<ItemSlot>();
 
         private InventoryManager inventoryManager;
-        private UIInventoryManager uiInventoryManager;
 
         public void Initialize()
         {
@@ -31,9 +30,6 @@ namespace Core
             }
 
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
-
-            itemSlotPrefab = uiInventoryManager.itemSlotPrefab;
 
             Refresh();
             inventoryManager.OnItemAdded += OnItemAdded;
@@ -62,6 +58,7 @@ namespace Core
                     Debug.LogError("ItemSlot component not found");
                     continue;
                 }
+
                 itemSlotComponent.Initialize();
 
                 if (item.Count > 0)

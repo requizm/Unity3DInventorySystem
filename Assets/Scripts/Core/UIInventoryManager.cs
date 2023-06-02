@@ -81,6 +81,7 @@ namespace Core
                 var pageComponent = pageGameObject.GetComponent<UIInventoryPage>();
                 pageComponent.InventoryPanel = pageGameObject;
                 pageComponent.PageIndex = i;
+                pageComponent.itemSlotPrefab = itemSlotPrefab;
                 pageComponent.Initialize();
                 UIInventoryPages.Add(pageComponent);
             }
