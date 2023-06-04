@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using Core;
 using Demo;
 using NUnit.Framework;
@@ -7,7 +8,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 namespace Tests.PlayMode
 {
@@ -177,36 +177,61 @@ namespace Tests.PlayMode
                 pickable.Pick();
             }
 
-            var randomIndex1 = Random.Range(0, 15);
-            var randomIndex2 = Random.Range(0, 15);
-            while (randomIndex1 == randomIndex2)
-            {
-                randomIndex2 = Random.Range(0, 15);
-            }
-
-            var item1 = inventoryManager.Items[randomIndex1][0];
-            var item2 = inventoryManager.Items[randomIndex2][0];
-            var oldItemOrder1 = randomIndex1;
-            var oldItemOrder2 = randomIndex2;
-
-            var item1Slot = uiInventoryManager.GetItemSlot(item1);
-            var item2Slot = uiInventoryManager.GetItemSlot(item2);
-            var oldSlotOrder1 = item1Slot.transform.GetSiblingIndex();
-            var oldSlotOrder2 = item2Slot.transform.GetSiblingIndex();
+            var item1Slot = uiInventoryManager.ItemSlots[0];
+            var item2Slot = uiInventoryManager.ItemSlots[1];
 
 
             uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
-            var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
-            var newSlotOrder2 = item2Slot.transform.GetSiblingIndex();
-            Assert.AreEqual(oldSlotOrder1, newSlotOrder2);
-            Assert.AreEqual(oldSlotOrder2, newSlotOrder1);
+            Assert.AreEqual(item1Slot.Items.Count, item2Slot.Items.Count);
 
-            var newItemOrder1 = inventoryManager.GetItemIndex(item1);
-            var newItemOrder2 = inventoryManager.GetItemIndex(item2);
-            Assert.AreEqual(oldItemOrder1, newItemOrder2.Item1);
-            Assert.AreEqual(oldItemOrder2, newItemOrder1.Item1);
+            for (var i = 0; i < item1Slot.Items.Count; i++)
+            {
+                Assert.AreEqual(item1Slot.Items[i].Id, inventoryManager.Items[0][i].Id);
+            }
+
+            for (var i = 0; i < item2Slot.Items.Count; i++)
+            {
+                Assert.AreEqual(item2Slot.Items[i].Id, inventoryManager.Items[1][i].Id);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator DropAndSwapTest()
+        {
+            yield return null;
+
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+            var uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            var uiInventoryInteractor = ServiceLocator.Current.Get<UIInventoryInteractor>();
+
+            // Pick items
+            var pickables = Object.FindObjectsOfType<Pickable>();
+            var stackLimit = pickables[0].ItemAsset.StackLimit;
+            if (stackLimit == 1)
+            {
+                throw new Exception("Stack limit is 1. It should be more than 1");
+            }
+
+            foreach (var pickable in pickables)
+            {
+                pickable.Pick();
+            }
+
+            // Drop item of the third slot.
+            var dropableItem = (Pickable)uiInventoryManager.ItemSlots[2].Items[0];
+            dropableItem.Drop();
+
+            Assert.AreEqual(stackLimit - 1, uiInventoryManager.ItemSlots[2].Items.Count);
+            Assert.AreEqual(stackLimit - 1, inventoryManager.Items[2].Count);
+
+            uiInventoryInteractor.SwapTwoItems(uiInventoryManager.ItemSlots[2], uiInventoryManager.ItemSlots[1]);
+
+            Assert.AreEqual(stackLimit - 1, uiInventoryManager.ItemSlots[1].Items.Count);
+            Assert.AreEqual(stackLimit - 1, inventoryManager.Items[1].Count);
+            Assert.AreEqual(stackLimit, uiInventoryManager.ItemSlots[2].Items.Count);
+            Assert.AreEqual(stackLimit, inventoryManager.Items[2].Count);
         }
 
         /// <summary>
@@ -231,37 +256,21 @@ namespace Tests.PlayMode
                 pickables[i].Pick();
             }
 
-            var randomIndex1 = Random.Range(0, pageLimit);
-            var randomIndex2 = inventoryManager.GetEmptySlot();
-            while (randomIndex1 == randomIndex2)
-            {
-                randomIndex1 = Random.Range(0, pageLimit);
-            }
+            var emptySlotIndex = inventoryManager.Items.Where(x => x.Count == 0).Select(x => inventoryManager.Items.IndexOf(x)).First();
 
-            var item1 = inventoryManager.Items[randomIndex1][0];
-            IItem item2 = null;
-            var oldItemOrder1 = randomIndex1;
-            var oldItemOrder2 = randomIndex2;
-
-            var item1Slot = uiInventoryManager.GetItemSlot(item1);
-            var item2Slot = uiInventoryManager.ItemSlots[randomIndex2];
-            var oldSlotOrder1 = item1Slot.transform.GetSiblingIndex();
-            var oldSlotOrder2 = item2Slot.transform.GetSiblingIndex();
-
+            var item1Slot = uiInventoryManager.ItemSlots[0];
+            var item2Slot = uiInventoryManager.ItemSlots[emptySlotIndex];
 
             uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
-            var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
-            var newSlotOrder2 = item2Slot.transform.GetSiblingIndex();
-            Assert.AreEqual(oldSlotOrder1, newSlotOrder2);
-            Assert.AreEqual(oldSlotOrder2, newSlotOrder1);
+            Assert.AreEqual(0, item1Slot.Items.Count);
+            Assert.True(item2Slot.Items.Count > 0);
 
-            var newItemOrder1 = inventoryManager.GetItemIndex(item1);
-            var newItemOrder2 = randomIndex1;
-
-            Assert.AreEqual(oldItemOrder1, newItemOrder2);
-            Assert.AreEqual(oldItemOrder2, newItemOrder1.Item1);
+            for (var i = 0; i < item2Slot.Items.Count; i++)
+            {
+                Assert.AreEqual(item2Slot.Items[i].Id, inventoryManager.Items[emptySlotIndex][i].Id);
+            }
         }
 
         /// <summary>
@@ -270,7 +279,7 @@ namespace Tests.PlayMode
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         [UnityTest]
-        public IEnumerator SwapWithMergeTest()
+        public IEnumerator SwapWithPartialMergeTest()
         {
             yield return null;
 
@@ -291,54 +300,30 @@ namespace Tests.PlayMode
                 pickable.Pick();
             }
 
-            // Select random two slots and drop one item from the second slot.
-            var randomIndex1 = Random.Range(0, 15);
-            var randomIndex2 = Random.Range(0, 15);
-            while (randomIndex1 == randomIndex2)
-            {
-                randomIndex2 = Random.Range(0, 15);
-            }
+            var item1Slot = uiInventoryManager.ItemSlots[0];
+            var item2Slot = uiInventoryManager.ItemSlots[1];
 
-            var item1 = inventoryManager.Items[randomIndex1][0];
-            var oldItemOrder1 = randomIndex1;
-            var item1Slot = uiInventoryManager.GetItemSlot(item1);
-
-
-            var item2 = inventoryManager.Items[randomIndex2][0];
-            var oldItemOrder2 = randomIndex2;
-            var item2Slot = uiInventoryManager.GetItemSlot(item2);
+            var item2 = item2Slot.Items[0];
             ((Pickable)item2).Drop();
 
             // Swap two slots.
             uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
-            // Sibling index should be the same because items are merged. Not swapped.
-            var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
-            var newSlotOrder2 = item2Slot.transform.GetSiblingIndex();
-            Assert.AreEqual(oldItemOrder1, newSlotOrder1);
-            Assert.AreEqual(oldItemOrder2, newSlotOrder2);
-
-            // Item order should be the same because items are merged. Not swapped.
-            var newItemOrder1 = inventoryManager.GetItemIndex(item1);
-            var newItemOrder2 = randomIndex2;
-            Assert.AreEqual(oldItemOrder1, newItemOrder1.Item1);
-            Assert.AreEqual(oldItemOrder2, newItemOrder2);
-
-            // Count of first item should be decreased by 1.
-            Assert.AreEqual(stackLimit - 1, item1Slot.Items.Count);
-            Assert.AreEqual(stackLimit - 1, inventoryManager.Items[newItemOrder1.Item1].Count);
-
-            // Count of second item should be increased by 1.
+            Assert.AreEqual(2, item1Slot.Items.Count);
             Assert.AreEqual(stackLimit, item2Slot.Items.Count);
-            Assert.AreEqual(stackLimit, inventoryManager.Items[newItemOrder2].Count);
+
+            for (var i = 0; i < item1Slot.Items.Count; i++)
+            {
+                Assert.AreEqual(item1Slot.Items[i].Id, inventoryManager.Items[0][i].Id);
+            }
+
+            for (var i = 0; i < item2Slot.Items.Count; i++)
+            {
+                Assert.AreEqual(item2Slot.Items[i].Id, inventoryManager.Items[1][i].Id);
+            }
         }
 
-        /// <summary>
-        /// Tries to swap-merge two items in the inventory.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         [UnityTest]
         public IEnumerator SwapWithFullMergeTest()
         {
@@ -361,51 +346,27 @@ namespace Tests.PlayMode
                 pickable.Pick();
             }
 
-            // Select random two slots and drop one item from the second slot.
-            var randomIndex1 = Random.Range(0, 15);
-            var randomIndex2 = Random.Range(0, 15);
-            while (randomIndex1 == randomIndex2)
-            {
-                randomIndex2 = Random.Range(0, 15);
-            }
-
-            var item1 = inventoryManager.Items[randomIndex1][0];
-            var oldItemOrder1 = randomIndex1;
-            var item1Slot = uiInventoryManager.GetItemSlot(item1);
+            var item1Slot = uiInventoryManager.ItemSlots[0];
+            var item1 = item1Slot.Items[0];
             ((Pickable)item1).Drop();
 
-
-            var item2 = inventoryManager.Items[randomIndex2][0];
-            var oldItemOrder2 = randomIndex2;
-            var item2Slot = uiInventoryManager.GetItemSlot(item2);
+            var item2Slot = uiInventoryManager.ItemSlots[1];
             for (int i = 0; i < stackLimit - 1; i++)
             {
-                ((Pickable)inventoryManager.Items[randomIndex2][i]).Drop();
+                ((Pickable)inventoryManager.Items[1][i]).Drop();
             }
 
             // Swap two slots.
             uiInventoryInteractor.SwapTwoItems(item1Slot, item2Slot);
             yield return null;
 
-            // Sibling index should be the same because items are merged. But first item is empty.
-            var newSlotOrder1 = item1Slot.transform.GetSiblingIndex();
-            var newSlotOrder2 = item2Slot.transform.GetSiblingIndex();
-            Assert.AreEqual(oldItemOrder1, newSlotOrder1);
-            Assert.AreEqual(oldItemOrder2, newSlotOrder2);
-
-            // Item order should be the same because items are merged.  But first item is empty.
-            var newItemOrder1 = randomIndex1;
-            var newItemOrder2 = randomIndex2;
-            Assert.AreEqual(oldItemOrder1, newItemOrder1);
-            Assert.AreEqual(oldItemOrder2, newItemOrder2);
-
-            // Count of first item should be decreased to 0.
             Assert.AreEqual(0, item1Slot.Items.Count);
-            Assert.AreEqual(0, inventoryManager.Items[newItemOrder1].Count);
-
-            // Count of second item should be increased to stack limit.
             Assert.AreEqual(stackLimit, item2Slot.Items.Count);
-            Assert.AreEqual(stackLimit, inventoryManager.Items[newItemOrder2].Count);
+
+            for (var i = 0; i < item2Slot.Items.Count; i++)
+            {
+                Assert.AreEqual(item2Slot.Items[i].Id, inventoryManager.Items[1][i].Id);
+            }
         }
     }
 }

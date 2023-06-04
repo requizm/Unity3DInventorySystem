@@ -34,6 +34,7 @@ namespace Core
             Refresh();
             inventoryManager.OnItemAdded += OnItemAdded;
             inventoryManager.OnItemRemoved += OnItemRemoved;
+            inventoryManager.OnSlotsSwapped += OnSlotSwapped;
         }
 
         /// <summary>
@@ -112,6 +113,25 @@ namespace Core
         {
             inventoryManager.OnItemAdded -= OnItemAdded;
             inventoryManager.OnItemRemoved -= OnItemRemoved;
+            inventoryManager.OnSlotsSwapped -= OnSlotSwapped;
+        }
+        
+        /// <summary>
+        /// Called when items are swapped.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        private void OnSlotSwapped(int from, int to)
+        {
+            var realFrom = from - PageIndex * inventoryManager.PageLimit;
+            var realTo = to - PageIndex * inventoryManager.PageLimit;
+            if (realFrom < 0 || realFrom >= ItemSlots.Count || realTo < 0 || realTo >= ItemSlots.Count)
+            {
+                return;
+            }
+
+            ItemSlots[realFrom].SetItem(new List<IItem>(inventoryManager.Items[from]));
+            ItemSlots[realTo].SetItem(new List<IItem>(inventoryManager.Items[to]));
         }
     }
 }

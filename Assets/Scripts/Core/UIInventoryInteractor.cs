@@ -76,12 +76,12 @@ namespace Core
         }
 
         private InventoryManager inventoryManager;
-        private UIInventoryManager _uiInventoryManager;
+        private UIInventoryManager uiInventoryManager;
 
         public void Initialize()
         {
             inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
-            _uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
+            uiInventoryManager = ServiceLocator.Current.Get<UIInventoryManager>();
         }
 
         /// <summary>
@@ -109,62 +109,10 @@ namespace Core
                 return;
             }
 
-            var swapNeeded = true;
-            if (!to.IsEmpty)
-            {
-                if (from.Items.GetType() == to.Items.GetType())
-                {
-                    var fromList = from.Items;
-                    var toList = to.Items;
+            var fromIndex = uiInventoryManager.ItemSlots.IndexOf(from);
+            var toIndex = uiInventoryManager.ItemSlots.IndexOf(to);
 
-                    var fromCount = fromList.Count;
-                    var toCount = toList.Count;
-
-                    var fromStackLimit = from.Items[0].ItemAsset.StackLimit;
-                    var toStackLimit = to.Items[0].ItemAsset.StackLimit;
-
-                    if (fromCount + toCount <= fromStackLimit)
-                    {
-                        var items = new List<IItem>();
-                        items.AddRange(fromList);
-                        items.AddRange(toList);
-                        to.SetItem(items);
-                        from.Clear();
-                        swapNeeded = false;
-                    }
-                    else if (toCount < toStackLimit)
-                    {
-                        var items = new List<IItem>();
-                        items.AddRange(toList);
-                        var count = toStackLimit - toCount;
-                        items.AddRange(fromList.GetRange(fromCount - count, count));
-                        to.SetItem(items);
-                        from.Decrease(count);
-                        swapNeeded = false;
-                    }
-                }
-            }
-
-            var fromTransform = from.transform;
-            var toTransform = to.transform;
-            var fromSiblingIndex = fromTransform.GetSiblingIndex();
-            var toSiblingIndex = toTransform.GetSiblingIndex();
-            if (swapNeeded)
-            {
-                fromTransform.SetSiblingIndex(toSiblingIndex);
-                toTransform.SetSiblingIndex(fromSiblingIndex);
-            }
-
-            var pageIndex = _uiInventoryManager.CurrentPageIndex;
-            var fromItemIndex = pageIndex * inventoryManager.PageLimit + fromSiblingIndex;
-            var toItemIndex = pageIndex * inventoryManager.PageLimit + toSiblingIndex;
-
-            var fromItemsCopy = new List<IItem>(from.Items);
-            var toItemsCopy = new List<IItem>(to.Items);
-
-            // Change backend order
-            inventoryManager.Items[fromItemIndex] = swapNeeded ? toItemsCopy : fromItemsCopy;
-            inventoryManager.Items[toItemIndex] = swapNeeded ? fromItemsCopy : toItemsCopy;
+            inventoryManager.SwapSlots(fromIndex, toIndex);
 
             if (SelectedSlot != null && SelectedSlot.IsEmpty)
             {

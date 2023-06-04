@@ -18,7 +18,7 @@ namespace Tests.EditMode
             // Register all your services next.
             ServiceLocator.Current.Register(new InventoryManager());
         }
-        
+
         [TearDown]
         public void TearDown()
         {
@@ -115,6 +115,112 @@ namespace Tests.EditMode
             Assert.AreEqual(1, inventoryManager.Count);
             Assert.AreEqual(1, inventoryManager.Items[0].Count);
             Assert.AreEqual(888, inventoryManager.Items[0][0].Id);
+        }
+
+        [Test]
+        public void SwapNotNullTest()
+        {
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+            var item1 = new TestItem(999, new TestItemAsset(999, $"Asset999", new List<string>(), 2, null, null));
+            var item2 = new TestItem(888, new TestItemAsset(888, $"Asset888", new List<string>(), 2, null, null));
+            inventoryManager.AddItem(item1);
+            inventoryManager.AddItem(item2);
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(999, inventoryManager.Items[0][0].Id);
+            Assert.AreEqual(888, inventoryManager.Items[1][0].Id);
+
+            inventoryManager.SwapSlots(0, 1);
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(888, inventoryManager.Items[0][0].Id);
+            Assert.AreEqual(999, inventoryManager.Items[1][0].Id);
+        }
+
+        [Test]
+        public void SwapNullTest()
+        {
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+            var item1 = new TestItem(999, new TestItemAsset(999, $"Asset999", new List<string>(), 2, null, null));
+            inventoryManager.AddItem(item1);
+            Assert.AreEqual(1, inventoryManager.Count);
+            Assert.AreEqual(999, inventoryManager.Items[0][0].Id);
+
+            inventoryManager.SwapSlots(0, 1);
+            Assert.AreEqual(1, inventoryManager.Count);
+            Assert.AreEqual(0, inventoryManager.Items[0].Count);
+            Assert.AreEqual(1, inventoryManager.Items[1].Count);
+            Assert.AreEqual(999, inventoryManager.Items[1][0].Id);
+        }
+
+        [Test]
+        public void SwapWithFullMergeTest()
+        {
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+
+            var itemAsset = new TestItemAsset(999, $"Asset999", new List<string>(), 3, null, null);
+            var item1 = new TestItem(999, itemAsset);
+            var item2 = new TestItem(888, itemAsset);
+            var item3 = new TestItem(777, itemAsset);
+            var item4 = new TestItem(666, itemAsset);
+
+            inventoryManager.AddItem(item1);
+            inventoryManager.AddItem(item2);
+            inventoryManager.AddItem(item3);
+            inventoryManager.AddItem(item4);
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(3, inventoryManager.Items[0].Count);
+            Assert.AreEqual(1, inventoryManager.Items[1].Count);
+
+            inventoryManager.RemoveItem(item1);
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(2, inventoryManager.Items[0].Count);
+            Assert.AreEqual(1, inventoryManager.Items[1].Count);
+
+            inventoryManager.SwapSlots(0, 1);
+            Assert.AreEqual(1, inventoryManager.Count);
+            Assert.AreEqual(0, inventoryManager.Items[0].Count);
+            Assert.AreEqual(3, inventoryManager.Items[1].Count);
+
+            Assert.AreEqual(888, inventoryManager.Items[1][0].Id);
+            Assert.AreEqual(777, inventoryManager.Items[1][1].Id);
+            Assert.AreEqual(666, inventoryManager.Items[1][2].Id);
+        }
+
+        [Test]
+        public void SwapPartialMergeTest()
+        {
+            var inventoryManager = ServiceLocator.Current.Get<InventoryManager>();
+
+            var itemAsset = new TestItemAsset(999, $"Asset999", new List<string>(), 3, null, null);
+            var item1 = new TestItem(999, itemAsset);
+            var item2 = new TestItem(888, itemAsset);
+            var item3 = new TestItem(777, itemAsset);
+            var item4 = new TestItem(666, itemAsset);
+            var item5 = new TestItem(555, itemAsset);
+
+            inventoryManager.AddItem(item1);
+            inventoryManager.AddItem(item2);
+            inventoryManager.AddItem(item3);
+            inventoryManager.AddItem(item4);
+            inventoryManager.AddItem(item5);
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(3, inventoryManager.Items[0].Count);
+            Assert.AreEqual(2, inventoryManager.Items[1].Count);
+
+            inventoryManager.RemoveItem(item1);
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(2, inventoryManager.Items[0].Count);
+
+            inventoryManager.SwapSlots(1, 0);
+
+            Assert.AreEqual(2, inventoryManager.Count);
+            Assert.AreEqual(3, inventoryManager.Items[0].Count);
+            Assert.AreEqual(1, inventoryManager.Items[1].Count);
+
+            Assert.AreEqual(888, inventoryManager.Items[0][0].Id);
+            Assert.AreEqual(777, inventoryManager.Items[0][1].Id);
+            Assert.AreEqual(555, inventoryManager.Items[0][2].Id);
+
+            Assert.AreEqual(666, inventoryManager.Items[1][0].Id);
         }
     }
 }

@@ -23,6 +23,13 @@ namespace Core
         public Action<IItem, int> OnItemRemoved { get; set; }
 
         /// <summary>
+        /// Called when items are swapped.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public Action<int, int> OnSlotsSwapped { get; set; }
+
+        /// <summary>
         /// Current items in inventory.
         /// </summary>
         public List<List<IItem>> Items { get; set; }
@@ -102,23 +109,73 @@ namespace Core
 
             Debug.Log($"{item.ItemAsset.AssetName}:{item.Id} removed");
         }
-        
-        public Tuple<int, int> GetItemIndex(IItem item)
+
+        /// <summary>
+        /// Swap items in inventory. If items are stackable, they will be merged.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public void SwapSlots(int from, int to)
         {
-            var stackIndex = Items.FindIndex(i => i.Contains(item));
-            if (stackIndex == -1)
+            if (from < 0 || from >= Items.Count || to < 0 || to >= Items.Count)
             {
-                Debug.LogError($"Item {item.ItemAsset.AssetName}:{item.Id} not found");
-                return null;
+                Debug.LogError($"Invalid index");
+                return;
             }
 
-            var itemIndex = Items[stackIndex].FindIndex(i => i == item);
-            return new Tuple<int, int>(stackIndex, itemIndex);
-        }
-        
-        public int GetEmptySlot()
-        {
-            return Items.FindIndex(i => i.Count == 0);
+            var fromStack = Items[from];
+            var toStack = Items[to];
+
+            if (fromStack.Count == 0)
+            {
+                Debug.LogError($"Stack {from} is empty");
+                return;
+            }
+
+            bool done = false;
+            if (toStack.Count > 0)
+            {
+                var fromItemType = fromStack[0].ItemAsset.Id;
+                var toItemType = toStack[0].ItemAsset.Id;
+
+                if (fromItemType == toItemType)
+                {
+                    var stackLimit = fromStack[0].ItemAsset.StackLimit;
+
+                    var fromCount = fromStack.Count;
+                    var toCount = toStack.Count;
+
+                    if (fromCount + toCount <= stackLimit)
+                    {
+                        var toItems = new List<IItem>();
+                        toItems.AddRange(fromStack);
+                        toItems.AddRange(toStack);
+
+                        Items[to] = toItems;
+                        Items[from] = new List<IItem>();
+                        done = true;
+                    }
+                    else if (toCount < stackLimit)
+                    {
+                        var toItems = new List<IItem>();
+                        toItems.AddRange(toStack);
+                        toItems.AddRange(fromStack.GetRange(fromCount - (stackLimit - toCount), stackLimit - toCount));
+
+                        Items[to] = toItems;
+                        Items[from] = fromStack.GetRange(0, fromCount - (stackLimit - toCount));
+                        done = true;
+                    }
+                }
+            }
+            
+            if (!done)
+            {
+                Items[from] = toStack;
+                Items[to] = fromStack;
+            }
+
+
+            OnSlotsSwapped?.Invoke(from, to);
         }
     }
 }

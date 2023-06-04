@@ -49,6 +49,11 @@ namespace Core
         /// <param name="item">Count should be greater than 0</param>
         public void SetItem(List<IItem> item)
         {
+            if (item.Count == 0)
+            {
+                Clear();
+                return;
+            }
             nameText.text = item[0].ItemAsset.AssetName;
             iconImage.sprite = item[0].ItemAsset.Icon;
             stackText.text = item.Count.ToString();
@@ -170,9 +175,9 @@ namespace Core
                 return;
             }
 
-            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            var pointerEventData = new PointerEventData(EventSystem.current);
             pointerEventData.position = Input.mousePosition;
-            List<RaycastResult> results = new List<RaycastResult>();
+            var results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerEventData, results);
             var found = false;
             foreach (var result in results)
